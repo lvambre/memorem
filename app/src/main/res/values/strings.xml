@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Memorem</string>
+    <string name="popular_movies">Popular</string>
+    <string name="top_rated_movies">Top Rated</string>
 </resources>
