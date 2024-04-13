@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">Memorem</string>
+    <string name="movie_details">Movie details</string>
+    <string name="search">Search movie</string>
+    <string name="favorite_movies">Favorite movies</string>
+    <string name="rating_movies">Rating movies</string>
+
     <string name="popular_movies">Popular</string>
     <string name="top_rated_movies">Top Rated</string>
+
+    <string name="release_date">Release date: \u0020</string>
+
+    <string name="back_button">Back button</string>
 </resources>

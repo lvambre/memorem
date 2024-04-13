@@ -1,8 +1,5 @@
-package com.ltu.m7019e.memorem.screens
+package com.ltu.m7019e.memorem.ui.screens
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +39,45 @@ import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
 
 @Composable
+fun StartScreen(
+    onMovieItemClicked: (Movie) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+    ) {
+        // For now, both lists are the same because we didn't retrieve all the different movies
+        val popularMovies = Movies().getMovies()
+        val topRatedMovies = Movies().getMovies()
+
+        Text(
+            text = stringResource(id = R.string.popular_movies),
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier
+                .padding(start = 8.dp)
+        )
+        MovieList(
+            movies = popularMovies,
+            onMovieItemClicked = onMovieItemClicked
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        Text(
+            text = stringResource(id = R.string.top_rated_movies),
+            style = MaterialTheme.typography.headlineSmall
+        )
+        MovieList(
+            movies = topRatedMovies,
+            onMovieItemClicked = onMovieItemClicked
+        )
+    }
+}
+
+@Composable
 fun MovieList(movies: List<Movie>,
+              onMovieItemClicked: (Movie) -> Unit,
               modifier: Modifier = Modifier
 ) {
     LazyRow (
@@ -48,6 +86,7 @@ fun MovieList(movies: List<Movie>,
         items(movies) {
             MovieItem(
                 movie = it,
+                onMovieItemClicked = onMovieItemClicked,
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
         }
     }
@@ -56,12 +95,14 @@ fun MovieList(movies: List<Movie>,
 @Composable
 fun MovieItem(
     movie: Movie,
+    onMovieItemClicked: (Movie) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
     val defaultHeight = 155.dp
     val expandedHeight = 300.dp
     val height = if (!expanded) defaultHeight else expandedHeight
+    
     Card(modifier = modifier
         .width(120.dp)
         .height(height)
@@ -81,7 +122,7 @@ fun MovieItem(
                     model = Constants.POSTER_IMAGE_BASE_URL +
                             Constants.POSTER_IMAGE_WIDTH + movie.posterPath,
                     contentDescription = movie.title,
-                    modifier = modifier
+                    modifier = Modifier
                         .width(dimensionResource(R.dimen.image_width))
                         .height(dimensionResource(R.dimen.image_height)),
                     contentScale = ContentScale.Crop
@@ -89,7 +130,8 @@ fun MovieItem(
             }
             Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
             if(expanded) {
-               MovieDetails(
+               MovieInfo(
+                   onMovieItemClicked = onMovieItemClicked,
                    movie = movie)
             }
             Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
@@ -98,26 +140,23 @@ fun MovieItem(
 }
 
 @Composable
-fun MovieDetails(
+fun MovieInfo(
     movie: Movie,
+    onMovieItemClicked: (Movie) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioNoBouncy,
-                    stiffness = Spring.StiffnessMedium
-                )
-            )
+        modifier = modifier
     ) {
+        // CLICKABLE TEXT TO REDIRECT YOU TO THE MOVIE DETAIL SCREEN
         Text(
             text = movie.title,
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(dimensionResource(R.dimen.padding_small))
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clickable { onMovieItemClicked(movie) },
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
@@ -126,16 +165,18 @@ fun MovieDetails(
             text = movie.releaseDate,
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
     }
 }
-@Preview(showBackground = true)
+
+@Preview(showBackground = true,
+    showSystemUi = true)
 @Composable
 fun MovieItemPreview() {
     MemoremTheme {
-        MovieList(Movies().getMovies())
+         StartScreen(onMovieItemClicked = {})
     }
 }
