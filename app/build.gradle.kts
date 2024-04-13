@@ -61,8 +61,7 @@ dependencies {
     implementation(libs.androidx.material3)
 
     // Coil Image dependency
-    // New syntax doesn't work
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation(libs.coil.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
 
