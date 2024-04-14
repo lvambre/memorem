@@ -5,10 +5,16 @@
     <string name="favorite_movies">Favorite movies</string>
     <string name="rating_movies">Rating movies</string>
 
+    <string name="open_homepage_with">Open with…</string>
+
     <string name="popular_movies">Popular</string>
     <string name="top_rated_movies">Top Rated</string>
 
     <string name="release_date">Release date: \u0020</string>
+    <string name="genres">Genres: \u0020</string>
+    <string name="genre">Genre: \u0020</string>
+    <string name="homepage">Visit homepage</string>
+    <string name="imdb">Visit IMDB Page</string>
 
     <string name="back_button">Back button</string>
 </resources>

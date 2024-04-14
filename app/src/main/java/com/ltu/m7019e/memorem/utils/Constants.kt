@@ -6,5 +6,6 @@ object Constants {
     const val POSTER_IMAGE_WIDTH = "w92"
     const val BACKDROP_IMAGE_WIDTH = "w1280"
 
+    const val IMDB_BASE_URL = "https://www.imdb.com/title/"
     const val API_KEY = SECRETS.API_KEY
 }

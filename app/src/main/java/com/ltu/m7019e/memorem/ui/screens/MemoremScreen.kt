@@ -1,6 +1,9 @@
 package com.ltu.m7019e.memorem.ui.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,10 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -37,6 +40,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ltu.m7019e.memorem.R
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
+import com.ltu.m7019e.memorem.utils.Constants
 import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
 
 enum class MemoremScreen(@StringRes val title: Int) {
@@ -86,15 +90,21 @@ fun MemoremApp(
                     },
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
+                        .padding(dimensionResource(R.dimen.padding_medium))
                 )
             }
 
             composable(route = MemoremScreen.Detail.name) {
+                val context = LocalContext.current
                 uiState.selectedMovie?.let { movie ->
                     MovieDetailScreen(
                         movie = movie,
-                        modifier = Modifier)
+                        goToHomePage = { homepageUrl: String -> goToHomepage(context, homepageUrl) },
+                        openImdbApp = { imdb: String -> openImdbApp(context, imdb) },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(dimensionResource(R.dimen.padding_medium))
+                    )
                 }
             }
 
@@ -124,7 +134,7 @@ fun MemoremTopAppBar(
         title = {
             Text(
                 text = stringResource(id = currentScreen.title),
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineLarge
             )
         },
         modifier = modifier,
@@ -178,6 +188,33 @@ fun MemoremBottomAppBar(
                     contentDescription = "Rating movies page")
             }
         }
+    }
+}
+
+private fun goToHomepage(
+    context: Context,
+    homepageUrl: String
+) {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse(homepageUrl)
+    }
+
+    context.startActivity(
+        Intent.createChooser(
+            intent,
+            context.getString(R.string.open_homepage_with)
+        )
+    )
+}
+private fun openImdbApp(context: Context, imdb: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.IMDB_BASE_URL + imdb))
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    intent.setPackage("com.imdb.mobile")
+    try {
+        context.startActivity(intent)
+    } catch (e: android.content.ActivityNotFoundException) {
+        // If the app is not installed on the phone, redirect to the browser
+        goToHomepage(context, Constants.IMDB_BASE_URL + imdb)
     }
 }
 

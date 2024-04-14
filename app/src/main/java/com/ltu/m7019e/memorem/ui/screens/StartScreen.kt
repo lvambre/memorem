@@ -47,13 +47,12 @@ fun StartScreen(
         modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
-        // For now, both lists are the same because we didn't retrieve all the different movies
-        val popularMovies = Movies().getMovies()
-        val topRatedMovies = Movies().getMovies()
+        val popularMovies = Movies().getPopularMovies()
+        val topRatedMovies = Movies().getTopRatedMovies()
 
         Text(
             text = stringResource(id = R.string.popular_movies),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier
                 .padding(start = 8.dp)
         )
@@ -66,7 +65,7 @@ fun StartScreen(
 
         Text(
             text = stringResource(id = R.string.top_rated_movies),
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineMedium
         )
         MovieList(
             movies = topRatedMovies,
@@ -99,12 +98,12 @@ fun MovieItem(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val defaultHeight = 155.dp
-    val expandedHeight = 300.dp
+    val defaultHeight = 140.dp
+    val expandedHeight = 230.dp
     val height = if (!expanded) defaultHeight else expandedHeight
-    
+
     Card(modifier = modifier
-        .width(120.dp)
+        .width(115.dp)
         .height(height)
         .clickable { expanded = !expanded },
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
@@ -115,7 +114,8 @@ fun MovieItem(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(dimensionResource(R.dimen.padding_small)),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -124,11 +124,12 @@ fun MovieItem(
                     contentDescription = movie.title,
                     modifier = Modifier
                         .width(dimensionResource(R.dimen.image_width))
-                        .height(dimensionResource(R.dimen.image_height)),
+                        .height(dimensionResource(R.dimen.image_height))
+                        .fillMaxHeight(),
                     contentScale = ContentScale.Crop
                 )
             }
-            Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
+            // Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
             if(expanded) {
                MovieInfo(
                    onMovieItemClicked = onMovieItemClicked,
@@ -159,15 +160,6 @@ fun MovieInfo(
                 .clickable { onMovieItemClicked(movie) },
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = movie.releaseDate,
-            style = MaterialTheme.typography.bodySmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = dimensionResource(R.dimen.padding_small))
         )
     }
 }

@@ -2,33 +2,51 @@ package com.ltu.m7019e.memorem.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.ltu.m7019e.memorem.R
+
+val Roboto = FontFamily(
+    Font(R.font.roboto_regular),
+    Font(R.font.roboto_bold)
+)
+
+val Jersey20 = FontFamily(
+    Font(R.font.jersey20_regular)
+)
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+    bodySmall = TextStyle(
+        fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        fontSize = 16.sp
     ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+    bodyMedium = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = Jersey20,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = Jersey20,
+        fontWeight = FontWeight.Normal,
+        fontSize = 30.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = Jersey20,
+        fontWeight = FontWeight.Normal,
+        fontSize = 40.sp
     )
-    */
 )
