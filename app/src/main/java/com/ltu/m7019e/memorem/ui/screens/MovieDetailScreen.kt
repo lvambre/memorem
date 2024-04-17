@@ -23,7 +23,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.ltu.m7019e.memorem.R
+import com.ltu.m7019e.memorem.database.MoviesDetails
 import com.ltu.m7019e.memorem.model.Movie
+import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.utils.Constants
 
 @Composable
@@ -33,6 +35,7 @@ fun MovieDetailScreen(
     openImdbApp: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val movieDetails: MovieDetails = MoviesDetails().getMovieDetails(movie.id)
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -40,7 +43,7 @@ fun MovieDetailScreen(
         Box {
             AsyncImage(
                 model = Constants.BACKDROP_IMAGE_BASE_URL +
-                        Constants.BACKDROP_IMAGE_WIDTH + movie.backdropPath,
+                        Constants.BACKDROP_IMAGE_WIDTH + movieDetails.backdropPath,
                 contentDescription = movie.title,
                 modifier = modifier,
                 contentScale = ContentScale.Crop
@@ -56,15 +59,15 @@ fun MovieDetailScreen(
         )
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
         Text(
-            text = stringResource(R.string.release_date) + movie.releaseDate,
+            text = stringResource(R.string.release_date) + movieDetails.releaseDate,
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
         )
-        if (movie.genres.size == 1) {
+        if (movieDetails.genres.size == 1) {
             Text(
-                text = stringResource(R.string.genre) + movie.genres[0].name,
+                text = stringResource(R.string.genre) + movieDetails.genres[0].name,
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -73,7 +76,7 @@ fun MovieDetailScreen(
             )
         } else {
             Text(
-                text = stringResource(R.string.genres) + movie.genres.joinToString(", ") { it.name },
+                text = stringResource(R.string.genres) + movieDetails.genres.joinToString(", ") { it.name },
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -88,7 +91,7 @@ fun MovieDetailScreen(
             elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
         ){
             Text(
-                text = movie.overview,
+                text = movieDetails.overview,
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -97,7 +100,7 @@ fun MovieDetailScreen(
             )
         }
         Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
-        if (movie.homepage != "") {
+        if (movieDetails.homepage != "") {
             Text(
                 text = stringResource(R.string.homepage),
                 style = MaterialTheme.typography.bodySmall,
@@ -105,7 +108,7 @@ fun MovieDetailScreen(
                 textDecoration = TextDecoration.Underline,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .clickable { goToHomePage(movie.homepage) }
+                    .clickable { goToHomePage(movieDetails.homepage) }
                     .fillMaxWidth()
                     .padding(top = dimensionResource(R.dimen.padding_small))
             )
@@ -117,7 +120,7 @@ fun MovieDetailScreen(
             textDecoration = TextDecoration.Underline,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .clickable { openImdbApp(movie.imdbId) }
+                .clickable { openImdbApp(movieDetails.imdbId) }
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.padding_small))
         )

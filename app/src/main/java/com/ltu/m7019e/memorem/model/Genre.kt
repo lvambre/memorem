@@ -1,6 +1,6 @@
 package com.ltu.m7019e.memorem.model
 
 data class Genre(
-    val id: Long = 0L,
+    val id: Int,
     val name: String
 )

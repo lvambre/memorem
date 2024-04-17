@@ -4,7 +4,7 @@ import com.ltu.m7019e.memorem.model.Genre
 
 class Genres {
     fun getGenres(): List<Genre> {
-    return listOf(
+        return listOf(
             Genre(
             id = 0,
             name = "Action"
@@ -82,6 +82,4 @@ class Genres {
             name = "Western"
         )
     ) }
-
-
 }

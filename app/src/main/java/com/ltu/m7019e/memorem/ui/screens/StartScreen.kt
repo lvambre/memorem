@@ -129,7 +129,6 @@ fun MovieItem(
                     contentScale = ContentScale.Crop
                 )
             }
-            // Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
             if(expanded) {
                MovieInfo(
                    onMovieItemClicked = onMovieItemClicked,
