@@ -207,9 +207,12 @@ private fun goToHomepage(
     )
 }
 private fun openImdbApp(context: Context, imdb: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.IMDB_BASE_URL + imdb))
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse(Constants.IMDB_BASE_URL + imdb)
+    }
+
     intent.setPackage("com.imdb.mobile")
+
     try {
         context.startActivity(intent)
     } catch (e: android.content.ActivityNotFoundException) {
