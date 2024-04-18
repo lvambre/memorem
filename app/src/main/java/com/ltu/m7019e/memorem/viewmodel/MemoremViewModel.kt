@@ -23,16 +23,11 @@ sealed interface MovieListUiState {
 }
 
 sealed interface SelectedMovieUiState {
-    data class Success(val movie: Movie): SelectedMovieUiState
+    data class Success(val movie: MovieDetails): SelectedMovieUiState
     object Error: SelectedMovieUiState
     object Loading: SelectedMovieUiState
 }
 
-sealed interface SelectedMovieDetailsUiState {
-    data class Success(val movieDetails: MovieDetails): SelectedMovieDetailsUiState
-    object Error: SelectedMovieDetailsUiState
-    object Loading: SelectedMovieDetailsUiState
-}
 class MemoremViewModel(private val moviesRepository: MoviesRepository) : ViewModel() {
 
     var movieListUiState: MovieListUiState by mutableStateOf(MovieListUiState.Loading)
@@ -40,8 +35,6 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository) : ViewMod
 
     var selectedMovieUiState: SelectedMovieUiState by mutableStateOf(SelectedMovieUiState.Loading)
         private set
-
-    var selectedMovieDetailsUiState: SelectedMovieDetailsUiState by mutableStateOf(SelectedMovieDetailsUiState.Loading)
 
     init {
         getPopularMovies()
@@ -73,28 +66,15 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository) : ViewMod
         }
     }
 
-    fun setSelectedMovie(movie: Movie) {
+    fun setSelectedMovieDetails(movie: Movie) {
         viewModelScope.launch {
             selectedMovieUiState = SelectedMovieUiState.Loading
             selectedMovieUiState = try {
-                SelectedMovieUiState.Success(movie)
+                SelectedMovieUiState.Success(moviesRepository.getMovieDetails(movie.id))
             } catch (e: IOException) {
                 SelectedMovieUiState.Error
             } catch (e: HttpException) {
                 SelectedMovieUiState.Error
-            }
-        }
-    }
-
-    fun getMovieDetails(id: Long) {
-        viewModelScope.launch {
-            selectedMovieDetailsUiState = SelectedMovieDetailsUiState.Loading
-            selectedMovieDetailsUiState = try {
-                SelectedMovieDetailsUiState.Success(moviesRepository.getMovieDetails(id))
-            } catch (e: IOException) {
-                SelectedMovieDetailsUiState.Error
-            } catch (e: HttpException) {
-                SelectedMovieDetailsUiState.Error
             }
         }
     }

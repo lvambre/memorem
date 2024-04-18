@@ -25,18 +25,17 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.ltu.m7019e.memorem.R
 import com.ltu.m7019e.memorem.utils.Constants
-import com.ltu.m7019e.memorem.viewmodel.SelectedMovieDetailsUiState
 
 @Composable
 fun MovieDetailScreen(
-    selectedMovieDetailsUiState: SelectedMovieDetailsUiState,
+    selectedMovieUiState: SelectedMovieUiState,
     goToHomePage: (String) -> Unit,
     openImdbApp: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    when (selectedMovieDetailsUiState) {
-        is SelectedMovieDetailsUiState.Success -> {
+    when (selectedMovieUiState) {
+        is SelectedMovieUiState.Success -> {
             Column(
                 modifier = modifier
                     .verticalScroll(rememberScrollState())
@@ -44,14 +43,14 @@ fun MovieDetailScreen(
                 Box {
                     AsyncImage(
                         model = Constants.BACKDROP_IMAGE_BASE_URL +
-                                Constants.BACKDROP_IMAGE_WIDTH + selectedMovieDetailsUiState.movieDetails.backdropPath,
-                        contentDescription = selectedMovieDetailsUiState.movieDetails.title,
+                                Constants.BACKDROP_IMAGE_WIDTH + selectedMovieUiState.movie.backdropPath,
+                        contentDescription = selectedMovieUiState.movie.title,
                         modifier = modifier,
                         contentScale = ContentScale.Crop
                     )
                 }
                 Text(
-                    text = selectedMovieDetailsUiState.movieDetails.title,
+                    text = selectedMovieUiState.movie.title,
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -60,15 +59,15 @@ fun MovieDetailScreen(
                 )
                 Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
                 Text(
-                    text = stringResource(R.string.release_date) + selectedMovieDetailsUiState.movieDetails.releaseDate,
+                    text = stringResource(R.string.release_date) + selectedMovieUiState.movie.releaseDate,
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-                if (selectedMovieDetailsUiState.movieDetails.genres.size == 1) {
+                if (selectedMovieUiState.movie.genres.size == 1) {
                     Text(
-                        text = stringResource(R.string.genre) + selectedMovieDetailsUiState.movieDetails.genres[0].name,
+                        text = stringResource(R.string.genre) + selectedMovieUiState.movie.genres[0].name,
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -78,7 +77,7 @@ fun MovieDetailScreen(
                 } else {
                     Text(
                         text = stringResource(R.string.genres) +
-                                selectedMovieDetailsUiState.movieDetails.genres.joinToString(", ") { it.name },
+                                selectedMovieUiState.movie.genres.joinToString(", ") { it.name },
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -93,7 +92,7 @@ fun MovieDetailScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
                 ) {
                     Text(
-                        text = selectedMovieDetailsUiState.movieDetails.overview,
+                        text = selectedMovieUiState.movie.overview,
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -102,7 +101,7 @@ fun MovieDetailScreen(
                     )
                 }
                 Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
-                if (selectedMovieDetailsUiState.movieDetails.homepage != "") {
+                if (selectedMovieUiState.movie.homepage != "") {
                     Text(
                         text = stringResource(R.string.homepage),
                         style = MaterialTheme.typography.bodySmall,
@@ -110,7 +109,7 @@ fun MovieDetailScreen(
                         textDecoration = TextDecoration.Underline,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .clickable { goToHomePage(selectedMovieDetailsUiState.movieDetails.homepage) }
+                            .clickable { goToHomePage(selectedMovieUiState.movie.homepage) }
                             .fillMaxWidth()
                             .padding(top = dimensionResource(R.dimen.padding_small))
                     )
@@ -122,14 +121,14 @@ fun MovieDetailScreen(
                     textDecoration = TextDecoration.Underline,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .clickable { openImdbApp(selectedMovieDetailsUiState.movieDetails.imdbId) }
+                        .clickable { openImdbApp(selectedMovieUiState.movie.imdbId) }
                         .fillMaxWidth()
                         .padding(dimensionResource(R.dimen.padding_small))
                 )
             }
         }
 
-        is SelectedMovieDetailsUiState.Loading -> {
+        is SelectedMovieUiState.Loading -> {
             Text(
                 text = "Loading...",
                 style = MaterialTheme.typography.bodySmall,
@@ -137,7 +136,7 @@ fun MovieDetailScreen(
             )
         }
 
-        is SelectedMovieDetailsUiState.Error -> {
+        is SelectedMovieUiState.Error -> {
             Text(
                 text = "Error: Something went wrong!",
                 style = MaterialTheme.typography.bodySmall,

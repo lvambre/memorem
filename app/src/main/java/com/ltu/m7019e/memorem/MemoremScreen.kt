@@ -40,6 +40,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.ui.screens.FavoriteMoviesScreen
 import com.ltu.m7019e.memorem.ui.screens.MovieDetailScreen
 import com.ltu.m7019e.memorem.ui.screens.MovieList
@@ -47,7 +48,6 @@ import com.ltu.m7019e.memorem.ui.screens.RatingMovieScreen
 import com.ltu.m7019e.memorem.ui.screens.SearchMovieScreen
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
-import com.ltu.m7019e.memorem.viewmodel.SelectedMovieDetailsUiState
 import com.ltu.m7019e.memorem.viewmodel.SelectedMovieUiState
 
 enum class MemoremScreen(@StringRes val title: Int) {
@@ -92,7 +92,7 @@ fun MemoremApp(
                 MovieList(
                     movieListUiState = memoremViewModel.movieListUiState,
                     onMovieItemClicked = { movie ->
-                        memoremViewModel.setSelectedMovie(movie)
+                        memoremViewModel.setSelectedMovieDetails(movie)
                         navController.navigate(MemoremScreen.Detail.name)
                     },
                     modifier = Modifier
@@ -104,7 +104,7 @@ fun MemoremApp(
             composable(route = MemoremScreen.Detail.name) {
                 val context = LocalContext.current
                 MovieDetailScreen(
-                    selectedMovieDetailsUiState = memoremViewModel.selectedMovieDetailsUiState,
+                    selectedMovieUiState = memoremViewModel.selectedMovieUiState,
                     goToHomePage = { homepageUrl: String -> goToHomepage(context, homepageUrl) },
                     openImdbApp = { imdb: String -> openImdbApp(context, imdb) },
                     modifier = Modifier
