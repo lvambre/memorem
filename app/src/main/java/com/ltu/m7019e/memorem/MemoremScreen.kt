@@ -1,5 +1,6 @@
 package com.ltu.m7019e.memorem
 
+import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -26,11 +27,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -44,7 +47,8 @@ import com.ltu.m7019e.memorem.ui.screens.RatingMovieScreen
 import com.ltu.m7019e.memorem.ui.screens.SearchMovieScreen
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
-import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
+import com.ltu.m7019e.memorem.viewmodel.SelectedMovieDetailsUiState
+import com.ltu.m7019e.memorem.viewmodel.SelectedMovieUiState
 
 enum class MemoremScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
@@ -100,9 +104,9 @@ fun MemoremApp(
             composable(route = MemoremScreen.Detail.name) {
                 val context = LocalContext.current
                 MovieDetailScreen(
-                    selectedMovieUiState = memoremViewModel.selectedMovieUiState,
-                    // goToHomePage = { homepageUrl: String -> goToHomepage(context, homepageUrl) },
-                    // openImdbApp = { imdb: String -> openImdbApp(context, imdb) },
+                    selectedMovieDetailsUiState = memoremViewModel.selectedMovieDetailsUiState,
+                    goToHomePage = { homepageUrl: String -> goToHomepage(context, homepageUrl) },
+                    openImdbApp = { imdb: String -> openImdbApp(context, imdb) },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium))

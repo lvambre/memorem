@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.ltu.m7019e.memorem.MemoremApplication
 import com.ltu.m7019e.memorem.database.MoviesRepository
 import com.ltu.m7019e.memorem.model.Movie
+import com.ltu.m7019e.memorem.model.MovieDetails
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -27,6 +28,11 @@ sealed interface SelectedMovieUiState {
     object Loading: SelectedMovieUiState
 }
 
+sealed interface SelectedMovieDetailsUiState {
+    data class Success(val movieDetails: MovieDetails): SelectedMovieDetailsUiState
+    object Error: SelectedMovieDetailsUiState
+    object Loading: SelectedMovieDetailsUiState
+}
 class MemoremViewModel(private val moviesRepository: MoviesRepository) : ViewModel() {
 
     var movieListUiState: MovieListUiState by mutableStateOf(MovieListUiState.Loading)
@@ -34,6 +40,8 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository) : ViewMod
 
     var selectedMovieUiState: SelectedMovieUiState by mutableStateOf(SelectedMovieUiState.Loading)
         private set
+
+    var selectedMovieDetailsUiState: SelectedMovieDetailsUiState by mutableStateOf(SelectedMovieDetailsUiState.Loading)
 
     init {
         getPopularMovies()
@@ -74,6 +82,19 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository) : ViewMod
                 SelectedMovieUiState.Error
             } catch (e: HttpException) {
                 SelectedMovieUiState.Error
+            }
+        }
+    }
+
+    fun getMovieDetails(id: Long) {
+        viewModelScope.launch {
+            selectedMovieDetailsUiState = SelectedMovieDetailsUiState.Loading
+            selectedMovieDetailsUiState = try {
+                SelectedMovieDetailsUiState.Success(moviesRepository.getMovieDetails(id))
+            } catch (e: IOException) {
+                SelectedMovieDetailsUiState.Error
+            } catch (e: HttpException) {
+                SelectedMovieDetailsUiState.Error
             }
         }
     }

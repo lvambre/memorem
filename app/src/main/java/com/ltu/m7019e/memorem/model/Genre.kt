@@ -4,13 +4,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Movie(
+data class Genre(
     @SerialName(value = "id")
     var id: Long = 0L,
 
-    @SerialName(value = "title")
-    var title: String,
-
-    @SerialName(value = "poster_path")
-    var posterPath: String
+    @SerialName(value = "name")
+    var name: String
 )
