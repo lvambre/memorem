@@ -7,5 +7,7 @@ object Constants {
     const val BACKDROP_IMAGE_WIDTH = "w1280"
 
     const val IMDB_BASE_URL = "https://www.imdb.com/title/"
+
+    const val MOVIE_LIST_BASE_URL = "https://api.themoviedb.org/3/movie/"
     const val API_KEY = SECRETS.API_KEY
 }

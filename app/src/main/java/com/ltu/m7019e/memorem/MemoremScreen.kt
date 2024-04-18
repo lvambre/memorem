@@ -1,4 +1,4 @@
-package com.ltu.m7019e.memorem.ui.screens
+package com.ltu.m7019e.memorem
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,7 +37,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.ltu.m7019e.memorem.R
+import com.ltu.m7019e.memorem.ui.screens.FavoriteMoviesScreen
+import com.ltu.m7019e.memorem.ui.screens.MovieDetailScreen
+import com.ltu.m7019e.memorem.ui.screens.MovieList
+import com.ltu.m7019e.memorem.ui.screens.RatingMovieScreen
+import com.ltu.m7019e.memorem.ui.screens.SearchMovieScreen
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
 import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
@@ -54,7 +57,6 @@ enum class MemoremScreen(@StringRes val title: Int) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MemoremApp(
-    viewModel: MemoremViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -73,7 +75,7 @@ fun MemoremApp(
         },
         bottomBar = { MemoremBottomAppBar(navController) }
     ) { innerPadding ->
-        val uiState by viewModel.uiState.collectAsState()
+        val memoremViewModel: MemoremViewModel = viewModel(factory = MemoremViewModel.Factory)
 
         NavHost(
             navController = navController,
@@ -83,9 +85,10 @@ fun MemoremApp(
                 .padding(innerPadding)
         ) {
             composable(route = MemoremScreen.Start.name) {
-                StartScreen(
+                MovieList(
+                    movieListUiState = memoremViewModel.movieListUiState,
                     onMovieItemClicked = { movie ->
-                        viewModel.setSelectedMovie(movie)
+                        memoremViewModel.setSelectedMovie(movie)
                         navController.navigate(MemoremScreen.Detail.name)
                     },
                     modifier = Modifier
@@ -96,16 +99,14 @@ fun MemoremApp(
 
             composable(route = MemoremScreen.Detail.name) {
                 val context = LocalContext.current
-                uiState.selectedMovie?.let { movie ->
-                    MovieDetailScreen(
-                        movie = movie,
-                        goToHomePage = { homepageUrl: String -> goToHomepage(context, homepageUrl) },
-                        openImdbApp = { imdb: String -> openImdbApp(context, imdb) },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(dimensionResource(R.dimen.padding_medium))
-                    )
-                }
+                MovieDetailScreen(
+                    selectedMovieUiState = memoremViewModel.selectedMovieUiState,
+                    // goToHomePage = { homepageUrl: String -> goToHomepage(context, homepageUrl) },
+                    // openImdbApp = { imdb: String -> openImdbApp(context, imdb) },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                )
             }
 
             composable(route = MemoremScreen.Search.name) {
@@ -225,6 +226,5 @@ private fun openImdbApp(context: Context, imdb: String) {
 @Composable
 fun StartScreenPreview() {
     MemoremTheme {
-        StartScreen(onMovieItemClicked = {})
     }
 }

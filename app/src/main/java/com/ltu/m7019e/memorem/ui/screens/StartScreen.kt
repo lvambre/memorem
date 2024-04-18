@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -33,13 +34,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.ltu.m7019e.memorem.R
-import com.ltu.m7019e.memorem.database.Movies
 import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
+import com.ltu.m7019e.memorem.viewmodel.MovieListUiState
 
-@Composable
+/* @Composable
 fun StartScreen(
+    movieListUiState: MovieListUiState,
     onMovieItemClicked: (Movie) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -47,8 +49,6 @@ fun StartScreen(
         modifier = modifier
             .verticalScroll(rememberScrollState())
     ) {
-        val popularMovies = Movies().getPopularMovies()
-        val topRatedMovies = Movies().getTopRatedMovies()
 
         Text(
             text = stringResource(id = R.string.popular_movies),
@@ -57,7 +57,7 @@ fun StartScreen(
                 .padding(start = 8.dp)
         )
         MovieList(
-            movies = popularMovies,
+            movieListUiState = movieListUiState,
             onMovieItemClicked = onMovieItemClicked
         )
 
@@ -68,27 +68,55 @@ fun StartScreen(
             style = MaterialTheme.typography.headlineMedium
         )
         MovieList(
-            movies = topRatedMovies,
+            movieListUiState = movieListUiState,
             onMovieItemClicked = onMovieItemClicked
         )
     }
-}
+} */
 
 @Composable
-fun MovieList(movies: List<Movie>,
+fun MovieList(movieListUiState: MovieListUiState,
               onMovieItemClicked: (Movie) -> Unit,
               modifier: Modifier = Modifier
 ) {
-    LazyRow (
+    /* LazyRow (
         modifier = modifier
-        ) {
-        items(movies) {
-            MovieItem(
-                movie = it,
-                onMovieItemClicked = onMovieItemClicked,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
+        ) { */
+    LazyColumn(
+        modifier = modifier
+    ) {
+        when(movieListUiState) {
+            is MovieListUiState.Success -> {
+                items(movieListUiState.movies) {
+                    MovieItem(
+                        movie = it,
+                        onMovieItemClicked = onMovieItemClicked,
+                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
+                }
+            }
+
+            is MovieListUiState.Loading -> {
+                item {
+                    Text(
+                        text = "Loading...",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+
+            is MovieListUiState.Error -> {
+                item {
+                    Text(
+                        text = "Error: Something went wrong!",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
         }
     }
+    // }
 }
 
 @Composable
@@ -168,6 +196,5 @@ fun MovieInfo(
 @Composable
 fun MovieItemPreview() {
     MemoremTheme {
-         StartScreen(onMovieItemClicked = {})
     }
 }
