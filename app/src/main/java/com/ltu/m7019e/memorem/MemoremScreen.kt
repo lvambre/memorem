@@ -1,6 +1,5 @@
 package com.ltu.m7019e.memorem
 
-import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,35 +25,30 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.ui.screens.FavoriteMoviesScreen
-import com.ltu.m7019e.memorem.ui.screens.MovieDetailScreen
-import com.ltu.m7019e.memorem.ui.screens.MovieList
-import com.ltu.m7019e.memorem.ui.screens.RatingMovieScreen
+import com.ltu.m7019e.memorem.ui.screens.MovieDetailsScreen
+import com.ltu.m7019e.memorem.ui.screens.MovieGrid
 import com.ltu.m7019e.memorem.ui.screens.SearchMovieScreen
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
-import com.ltu.m7019e.memorem.viewmodel.SelectedMovieUiState
+import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
 
 enum class MemoremScreen(@StringRes val title: Int) {
-    Start(title = R.string.app_name),
-    Detail(title = R.string.movie_details),
+    List(title = R.string.app_name),
+    Details(title = R.string.movie_details),
     Search(title = R.string.search),
-    Favorite(title = R.string.favorite_movies),
-    Rating(title = R.string.rating_movies)
+    Favorite(title = R.string.favorite_movies)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -65,7 +58,7 @@ fun MemoremApp(
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = MemoremScreen.valueOf(
-        backStackEntry?.destination?.route ?: MemoremScreen.Start.name
+        backStackEntry?.destination?.route ?: MemoremScreen.List.name
     )
 
     Scaffold(
@@ -73,7 +66,7 @@ fun MemoremApp(
             MemoremTopAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null
-                        && currentScreen != MemoremScreen.Start,
+                        && currentScreen != MemoremScreen.List,
                 navigateUp = { navController.navigateUp() }
                 )
         },
@@ -83,17 +76,17 @@ fun MemoremApp(
 
         NavHost(
             navController = navController,
-            startDestination = MemoremScreen.Start.name,
+            startDestination = MemoremScreen.List.name,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            composable(route = MemoremScreen.Start.name) {
-                MovieList(
+            composable(route = MemoremScreen.List.name) {
+                MovieGrid(
                     movieListUiState = memoremViewModel.movieListUiState,
                     onMovieItemClicked = { movie ->
                         memoremViewModel.setSelectedMovieDetails(movie)
-                        navController.navigate(MemoremScreen.Detail.name)
+                        navController.navigate(MemoremScreen.Details.name)
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -101,9 +94,9 @@ fun MemoremApp(
                 )
             }
 
-            composable(route = MemoremScreen.Detail.name) {
+            composable(route = MemoremScreen.Details.name) {
                 val context = LocalContext.current
-                MovieDetailScreen(
+                MovieDetailsScreen(
                     selectedMovieUiState = memoremViewModel.selectedMovieUiState,
                     goToHomePage = { homepageUrl: String -> goToHomepage(context, homepageUrl) },
                     openImdbApp = { imdb: String -> openImdbApp(context, imdb) },
@@ -119,10 +112,6 @@ fun MemoremApp(
 
             composable(route = MemoremScreen.Favorite.name) {
                 FavoriteMoviesScreen()
-            }
-
-            composable(route = MemoremScreen.Rating.name) {
-                RatingMovieScreen()
             }
         }
     }
@@ -169,7 +158,7 @@ fun MemoremBottomAppBar(
                     end = dimensionResource(R.dimen.padding_medium)
                 )
         ) {
-            IconButton(onClick = { navController.navigate(MemoremScreen.Start.name) }) {
+            IconButton(onClick = { navController.navigate(MemoremScreen.List.name) }) {
                 Icon(
                     Icons.Rounded.Home,
                     contentDescription = "Home page")
@@ -185,12 +174,6 @@ fun MemoremBottomAppBar(
                 Icon(
                     Icons.Rounded.Favorite,
                     contentDescription = "Favorite movies page")
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { navController.navigate(MemoremScreen.Rating.name) }) {
-                Icon(
-                    Icons.Rounded.Star,
-                    contentDescription = "Rating movies page")
             }
         }
     }

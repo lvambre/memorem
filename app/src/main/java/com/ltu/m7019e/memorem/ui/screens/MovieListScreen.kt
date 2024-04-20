@@ -9,11 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,50 +35,14 @@ import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
 import com.ltu.m7019e.memorem.viewmodel.MovieListUiState
 
-/* @Composable
-fun StartScreen(
-    movieListUiState: com.ltu.m7019e.memorem.viewmodel.MovieListUiState,
-    onMovieItemClicked: (Movie) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-    ) {
-
-        Text(
-            text = stringResource(id = R.string.popular_movies),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier
-                .padding(start = 8.dp)
-        )
-        MovieList(
-            movieListUiState = movieListUiState,
-            onMovieItemClicked = onMovieItemClicked
-        )
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        Text(
-            text = stringResource(id = R.string.top_rated_movies),
-            style = MaterialTheme.typography.headlineMedium
-        )
-        MovieList(
-            movieListUiState = movieListUiState,
-            onMovieItemClicked = onMovieItemClicked
-        )
-    }
-} */
-
 @Composable
 fun MovieList(movieListUiState: MovieListUiState,
               onMovieItemClicked: (Movie) -> Unit,
               modifier: Modifier = Modifier
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 128.dp),
+    LazyRow(
         modifier = modifier
-        ) {
+    ) {
         when(movieListUiState) {
             is MovieListUiState.Success -> {
                 items(movieListUiState.movies) {

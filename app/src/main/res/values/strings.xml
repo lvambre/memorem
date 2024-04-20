@@ -3,7 +3,6 @@
     <string name="movie_details">Movie details</string>
     <string name="search">Search movie</string>
     <string name="favorite_movies">Favorite movies</string>
-    <string name="rating_movies">Rating movies</string>
 
     <string name="open_homepage_with">Open with…</string>
 
@@ -15,6 +14,9 @@
     <string name="genre">Genre: \u0020</string>
     <string name="homepage">Visit homepage</string>
     <string name="imdb">Visit IMDB Page</string>
+    <string name="reviews">Reviews</string>
 
     <string name="back_button">Back button</string>
+
+    <string name="avatar_path">Author avatar</string>
 </resources>
