@@ -11,8 +11,8 @@ data class MovieDetails(
     @SerialName(value = "title")
     var title: String,
 
-    @SerialName(value = "backdrop_path")
-    var backdropPath: String,
+    @SerialName(value = "poster_path")
+    var posterPath: String,
 
     @SerialName(value = "release_date")
     var releaseDate: String,
@@ -27,5 +27,14 @@ data class MovieDetails(
     var homepage: String,
 
     @SerialName(value = "imdb_id")
-    var imdbId: String
+    var imdbId: String,
+
+    @SerialName(value = "production_companies")
+    var productionCompanies: List<ProductionCompany> = listOf()
+)
+
+@Serializable
+data class ProductionCompany(
+    @SerialName(value = "name")
+    var name: String
 )

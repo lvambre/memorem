@@ -13,6 +13,7 @@ import com.ltu.m7019e.memorem.database.MoviesRepository
 import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.model.MovieReview
+import com.ltu.m7019e.memorem.model.MovieVideo
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -24,7 +25,9 @@ sealed interface MovieListUiState {
 }
 
 sealed interface SelectedMovieUiState {
-    data class Success(val movie: MovieDetails, val movieReviews: List<MovieReview>): SelectedMovieUiState
+    data class Success(val movie: MovieDetails,
+                       val movieReviews: List<MovieReview>,
+                       val movieVideos: List<MovieVideo>): SelectedMovieUiState
     object Error: SelectedMovieUiState
     object Loading: SelectedMovieUiState
 }
@@ -72,7 +75,8 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository) : ViewMod
             selectedMovieUiState = SelectedMovieUiState.Loading
             selectedMovieUiState = try {
                 SelectedMovieUiState.Success(moviesRepository.getMovieDetails(movie.id),
-                        moviesRepository.getMovieReviews(movie.id).results)
+                        moviesRepository.getMovieReviews(movie.id).results,
+                    moviesRepository.getMovieVideos(movie.id).results)
             } catch (e: IOException) {
                 SelectedMovieUiState.Error
             } catch (e: HttpException) {

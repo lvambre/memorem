@@ -1,8 +1,9 @@
 package com.ltu.m7019e.memorem.database
 
 import com.ltu.m7019e.memorem.model.MovieDetails
-import com.ltu.m7019e.memorem.model.MovieResponse
-import com.ltu.m7019e.memorem.model.MovieReviewResponse
+import com.ltu.m7019e.memorem.model.responses.MovieResponse
+import com.ltu.m7019e.memorem.model.responses.MovieReviewResponse
+import com.ltu.m7019e.memorem.model.responses.MovieVideoResponse
 import com.ltu.m7019e.memorem.network.MemoremApiService
 
 interface MoviesRepository {
@@ -10,6 +11,7 @@ interface MoviesRepository {
     suspend fun getTopRatedMovies(): MovieResponse
     suspend fun getMovieDetails(id: Long): MovieDetails
     suspend fun getMovieReviews(id: Long): MovieReviewResponse
+    suspend fun getMovieVideos(id: Long): MovieVideoResponse
 }
 
 class NetworkMoviesRepository(private val apiService: MemoremApiService) : MoviesRepository {
@@ -27,5 +29,9 @@ class NetworkMoviesRepository(private val apiService: MemoremApiService) : Movie
 
     override suspend fun getMovieReviews(id: Long): MovieReviewResponse {
         return apiService.getMovieReviews(id)
+    }
+
+    override suspend fun getMovieVideos(id: Long): MovieVideoResponse {
+        return apiService.getMovieVideos(id)
     }
 }

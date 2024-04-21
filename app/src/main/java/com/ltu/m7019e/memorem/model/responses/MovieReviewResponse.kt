@@ -1,5 +1,6 @@
-package com.ltu.m7019e.memorem.model
+package com.ltu.m7019e.memorem.model.responses
 
+import com.ltu.m7019e.memorem.model.MovieReview
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
