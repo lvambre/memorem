@@ -24,5 +24,5 @@ data class AuthorDetails(
     @SerialName(value = "avatar_path")
     var avatarPath: String?,
     @SerialName(value = "rating")
-    var rating: Double
+    var rating: Double?
 )

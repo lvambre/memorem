@@ -37,8 +37,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ltu.m7019e.memorem.ui.screens.FavoriteMoviesScreen
+import com.ltu.m7019e.memorem.ui.screens.HomeScreen
 import com.ltu.m7019e.memorem.ui.screens.MovieDetailsScreen
-import com.ltu.m7019e.memorem.ui.screens.MovieGrid
 import com.ltu.m7019e.memorem.ui.screens.SearchMovieScreen
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
@@ -82,7 +82,7 @@ fun MemoremApp(
                 .padding(innerPadding)
         ) {
             composable(route = MemoremScreen.List.name) {
-                MovieGrid(
+                HomeScreen(
                     movieListUiState = memoremViewModel.movieListUiState,
                     onMovieItemClicked = { movie ->
                         memoremViewModel.setSelectedMovieDetails(movie)
@@ -90,7 +90,7 @@ fun MemoremApp(
                     },
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .padding(dimensionResource(R.dimen.padding_small))
                 )
             }
 

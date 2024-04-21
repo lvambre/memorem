@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -120,19 +121,17 @@ fun MovieDetailsScreen(
                     )
                 }
                 Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
-                if (selectedMovieUiState.movie.homepage != "") {
-                    Text(
-                        text = stringResource(R.string.homepage),
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .clickable { goToHomePage(selectedMovieUiState.movie.homepage) }
-                            .fillMaxWidth()
-                            .padding(top = dimensionResource(R.dimen.padding_small))
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.homepage),
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .clickable { goToHomePage(selectedMovieUiState.movie.homepage) }
+                        .fillMaxWidth()
+                        .padding(top = dimensionResource(R.dimen.padding_small))
+                )
                 Text(
                     text = stringResource(R.string.imdb),
                     style = MaterialTheme.typography.bodySmall,
@@ -147,7 +146,7 @@ fun MovieDetailsScreen(
                 Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
                 Text(
                     text = stringResource(R.string.reviews),
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
                 MovieReviewsList(
                     movieReviews = selectedMovieUiState.movieReviews,
@@ -160,7 +159,10 @@ fun MovieDetailsScreen(
             Text(
                 text = "Loading...",
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
             )
         }
 
@@ -168,7 +170,10 @@ fun MovieDetailsScreen(
             Text(
                 text = "Error: Something went wrong!",
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
             )
         }
     }
@@ -187,7 +192,11 @@ fun MovieReviewsList(
             MovieReviewItem(
                 movieReview = it,
                 modifier = Modifier
-                    .padding(top = dimensionResource(R.dimen.padding_small), end = dimensionResource (R.dimen.padding_medium))
+                    .padding(
+                        bottom = dimensionResource(R.dimen.padding_small),
+                        top = dimensionResource (R.dimen.padding_small),
+                        end = dimensionResource(R.dimen.padding_medium)
+                    )
                     .fillMaxWidth())
         }
     }

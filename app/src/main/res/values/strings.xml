@@ -8,6 +8,7 @@
 
     <string name="popular_movies">Popular</string>
     <string name="top_rated_movies">Top Rated</string>
+    <string name="all_movies">All</string>
 
     <string name="release_date">Release date: \u0020</string>
     <string name="genres">Genres: \u0020</string>
@@ -15,6 +16,8 @@
     <string name="homepage">Visit homepage</string>
     <string name="imdb">Visit IMDB Page</string>
     <string name="reviews">Reviews</string>
+
+
 
     <string name="back_button">Back button</string>
 

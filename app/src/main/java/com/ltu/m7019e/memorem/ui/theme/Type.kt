@@ -40,8 +40,8 @@ val Typography = Typography(
         fontSize = 20.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = Jersey20,
-        fontWeight = FontWeight.Normal,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Bold,
         fontSize = 30.sp
     ),
     headlineLarge = TextStyle(
