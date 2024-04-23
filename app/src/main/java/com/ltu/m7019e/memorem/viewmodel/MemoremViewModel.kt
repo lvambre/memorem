@@ -1,5 +1,6 @@
 package com.ltu.m7019e.memorem.viewmodel
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.ltu.m7019e.memorem.MemoremApplication
+import com.ltu.m7019e.memorem.R
 import com.ltu.m7019e.memorem.database.MoviesRepository
 import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.model.MovieDetails
@@ -17,6 +19,12 @@ import com.ltu.m7019e.memorem.model.MovieVideo
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+
+enum class MovieCategory(@StringRes val title: Int) {
+    ALL_MOVIES(title = R.string.all_movies),
+    POPULAR_MOVIES(title = R.string.popular_movies),
+    TOP_RATED_MOVIES(title = R.string.top_rated_movies)
+}
 
 sealed interface MovieListUiState {
     data class Success(val movies: List<Movie>): MovieListUiState
@@ -41,31 +49,44 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository) : ViewMod
         private set
 
     init {
-        getPopularMovies()
+        getListMovies(MovieCategory.ALL_MOVIES)
     }
 
-    private fun getTopRatedMovies() {
+    fun getListMovies(category: MovieCategory) {
         viewModelScope.launch {
             movieListUiState = MovieListUiState.Loading
-            movieListUiState = try {
-                MovieListUiState.Success(moviesRepository.getTopRatedMovies().results)
-            } catch (e: IOException) {
-                MovieListUiState.Error
-            } catch (e: HttpException) {
-                MovieListUiState.Error
-            }
-        }
-    }
-
-    fun getPopularMovies() {
-        viewModelScope.launch {
-            movieListUiState = MovieListUiState.Loading
-            movieListUiState = try {
-                MovieListUiState.Success(moviesRepository.getPopularMovies().results)
-            } catch (e: IOException) {
-                MovieListUiState.Error
-            } catch (e: HttpException) {
-                MovieListUiState.Error
+            movieListUiState = when(category) {
+                MovieCategory.ALL_MOVIES -> {
+                    try {
+                        MovieListUiState
+                            .Success(moviesRepository.getPopularMovies().results
+                                    + moviesRepository.getTopRatedMovies().results)
+                    } catch (e: IOException) {
+                        MovieListUiState.Error
+                    } catch (e: HttpException) {
+                        MovieListUiState.Error
+                    }
+                }
+                MovieCategory.POPULAR_MOVIES -> {
+                    try {
+                        MovieListUiState
+                            .Success(moviesRepository.getPopularMovies().results)
+                    } catch (e: IOException) {
+                        MovieListUiState.Error
+                    } catch (e: HttpException) {
+                        MovieListUiState.Error
+                    }
+                }
+                MovieCategory.TOP_RATED_MOVIES -> {
+                    try {
+                        MovieListUiState
+                            .Success(moviesRepository.getTopRatedMovies().results)
+                    } catch (e: IOException) {
+                        MovieListUiState.Error
+                    } catch (e: HttpException) {
+                        MovieListUiState.Error
+                    }
+                }
             }
         }
     }

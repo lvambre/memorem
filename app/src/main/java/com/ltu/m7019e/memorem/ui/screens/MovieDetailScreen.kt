@@ -1,5 +1,7 @@
 package com.ltu.m7019e.memorem.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -15,7 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -36,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -73,7 +80,20 @@ fun MovieDetailsScreen(
                 modifier = modifier
                     .verticalScroll(rememberScrollState())
             ) {
-                VideosList(moviesVideos = selectedMovieUiState.movieVideos)
+                if (selectedMovieUiState.movieVideos.isEmpty()) {
+                    Box {
+                        AsyncImage(
+                            model = Constants.BACKDROP_IMAGE_BASE_URL +
+                                    Constants.BACKDROP_IMAGE_WIDTH + selectedMovieUiState.movie.backdropPath,
+                            contentDescription = selectedMovieUiState.movie.title,
+                            modifier = modifier,
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                } else {
+                    VideosCarousel(moviesVideos = selectedMovieUiState.movieVideos)
+                }
+
                 Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -128,7 +148,8 @@ fun MovieDetailsScreen(
                                 .fillMaxWidth()
                                 .padding(
                                     start = dimensionResource(R.dimen.padding_small),
-                                    bottom = dimensionResource(R.dimen.padding_small)
+                                    bottom = dimensionResource(R.dimen.padding_small),
+                                    top = 4.dp
                                 )
                         )
                     }
@@ -289,21 +310,80 @@ fun VideosList(
     moviesVideos: List<MovieVideo>,
     modifier: Modifier = Modifier
 ) {
-    LazyRow {
+    LazyRow(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
         items(moviesVideos) {movieVideo ->
             VideoItem(
                 key = movieVideo.key,
+                site = movieVideo.site,
                 modifier = modifier)
         }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun VideosCarousel(
+    moviesVideos: List<MovieVideo>,
+    modifier: Modifier = Modifier
+) {
+    val pagerState = rememberPagerState(pageCount = { moviesVideos.size })
+    val pointsCount = moviesVideos.size
+
+    Column(
+        modifier = modifier
+    ) {
+        HorizontalPager(
+            state = pagerState
+        ) {
+            moviesVideos.forEach { video ->
+                VideoItem(
+                    key = video.key,
+                    site = video.site,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+        LazyRow(
+            modifier = Modifier
+                .padding(vertical = dimensionResource(R.dimen.padding_small))
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            items(pointsCount) { index ->
+                CurrentPoint(index == pagerState.currentPage)
+            }
+        }
+    }
+}
+
+@Composable
+fun CurrentPoint(selected: Boolean) {
+    val color = if (selected) Color(0xFF3E001C) else Color(0xFFD6C2C4)
+    Box(
+        modifier = Modifier
+            .size(10.dp)
+            .padding(horizontal = 4.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(color = color, shape = CircleShape)
+        )
     }
 }
 
 @Composable
 fun VideoItem(
     key: String,
+    site: String,
     modifier : Modifier = Modifier
 ) {
-    val url = Constants.VIDEO_YOUTUBE_BASE_URL + key
+    val url = if (site == "YouTube") (Constants.VIDEO_YOUTUBE_BASE_URL + key) else ""
+
     // Get the current context
     val context = LocalContext.current
 
@@ -341,6 +421,7 @@ fun VideoItem(
     )
 }
 
+
 @Preview
 @Composable
 fun MovieReviewItemPreview() {
@@ -352,9 +433,7 @@ fun MovieReviewItemPreview() {
                     "Wuchak",
                     "/4KVM1VkqmXLOuwj1jjaSdxbvBDk.jpg",
                     6.7),
-                "really bad movie",
-                "2019-02-20T11:34:23.418Z",
-                "https://www.themoviedb.org/review/5c6d3b3f0e0a2617779faa78"
+                "really bad movie"
             )
         )
     }

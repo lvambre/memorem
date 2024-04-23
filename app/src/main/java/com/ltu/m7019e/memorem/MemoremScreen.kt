@@ -88,6 +88,9 @@ fun MemoremApp(
                         memoremViewModel.setSelectedMovieDetails(movie)
                         navController.navigate(MemoremScreen.Details.name)
                     },
+                    onMovieListClicked = { category ->
+                        memoremViewModel.getListMovies(category)
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_small))

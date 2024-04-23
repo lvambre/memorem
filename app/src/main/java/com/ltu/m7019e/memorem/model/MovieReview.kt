@@ -11,10 +11,6 @@ data class MovieReview(
     val authorDetails: AuthorDetails,
     @SerialName(value = "content")
     var content: String,
-    @SerialName(value = "created_at")
-    var createdAt: String,
-    @SerialName(value = "url")
-    var url: String
 )
 
 @Serializable
