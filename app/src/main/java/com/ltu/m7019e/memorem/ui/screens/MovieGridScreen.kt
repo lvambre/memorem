@@ -66,6 +66,7 @@ fun HomeScreen(
                 TextButton(onClick = {
                     onMovieListClicked(MovieCategory.ALL_MOVIES)
                     selectedCategory = MovieCategory.ALL_MOVIES
+                    expanded = !expanded
                 }) {
                     Text(
                         text = stringResource(R.string.all_movies),
@@ -76,6 +77,7 @@ fun HomeScreen(
                 TextButton(onClick = {
                     onMovieListClicked(MovieCategory.POPULAR_MOVIES)
                     selectedCategory = MovieCategory.POPULAR_MOVIES
+                    expanded = !expanded
                 }) {
                     Text(
                         text = stringResource(R.string.popular_movies),
@@ -86,6 +88,7 @@ fun HomeScreen(
                 TextButton(onClick = {
                     onMovieListClicked(MovieCategory.TOP_RATED_MOVIES)
                     selectedCategory = MovieCategory.TOP_RATED_MOVIES
+                    expanded = !expanded
                 }) {
                     Text(
                         text = stringResource(R.string.top_rated_movies),
