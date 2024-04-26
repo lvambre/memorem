@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -66,6 +65,8 @@ import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
 import com.ltu.m7019e.memorem.viewmodel.SelectedMovieUiState
 
+const val VIDEO_URI = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+
 @Composable
 fun MovieDetailsScreen(
     selectedMovieUiState: SelectedMovieUiState,
@@ -91,7 +92,7 @@ fun MovieDetailsScreen(
                         )
                     }
                 } else {
-                    VideosCarousel(moviesVideos = selectedMovieUiState.movieVideos)
+                    VideoItem()
                 }
 
                 Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
@@ -305,24 +306,6 @@ fun MovieReviewItem(
     }
 }
 
-@Composable
-fun VideosList(
-    moviesVideos: List<MovieVideo>,
-    modifier: Modifier = Modifier
-) {
-    LazyRow(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        items(moviesVideos) {movieVideo ->
-            VideoItem(
-                key = movieVideo.key,
-                site = movieVideo.site,
-                modifier = modifier)
-        }
-    }
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VideosCarousel(
@@ -338,12 +321,8 @@ fun VideosCarousel(
         HorizontalPager(
             state = pagerState
         ) {
-            moviesVideos.forEach { video ->
-                VideoItem(
-                    key = video.key,
-                    site = video.site,
-                    modifier = Modifier.fillMaxSize()
-                )
+            moviesVideos.forEach { _ ->
+                VideoItem()
             }
         }
         LazyRow(
@@ -377,12 +356,7 @@ fun CurrentPoint(selected: Boolean) {
 }
 
 @Composable
-fun VideoItem(
-    key: String,
-    site: String,
-    modifier : Modifier = Modifier
-) {
-    val url = if (site == "YouTube") (Constants.VIDEO_YOUTUBE_BASE_URL + key) else ""
+fun VideoItem() {
 
     // Get the current context
     val context = LocalContext.current
@@ -391,8 +365,8 @@ fun VideoItem(
     val exoPlayer = ExoPlayer.Builder(context).build()
 
     // Create a MediaSource
-    val mediaSource = remember(url) {
-        MediaItem.fromUri(url)
+    val mediaSource = remember(VIDEO_URI) {
+        MediaItem.fromUri(VIDEO_URI)
     }
 
     // Set MediaSource to ExoPlayer
