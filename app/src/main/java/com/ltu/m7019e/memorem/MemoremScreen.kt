@@ -114,7 +114,16 @@ fun MemoremApp(
             }
 
             composable(route = MemoremScreen.Favorite.name) {
-                FavoriteMoviesScreen()
+                FavoriteMoviesScreen(
+                    movieListUiState = memoremViewModel.movieListUiState,
+                    onMovieItemClicked = { movie ->
+                        memoremViewModel.setSelectedMovieDetails(movie)
+                        navController.navigate(MemoremScreen.Details.name)
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_small))
+                )
             }
         }
     }

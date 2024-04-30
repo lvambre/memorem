@@ -17,8 +17,6 @@ data class MovieReview(
 data class AuthorDetails(
     @SerialName(value = "username")
     var username: String,
-    @SerialName(value = "avatar_path")
-    var avatarPath: String?,
     @SerialName(value = "rating")
     var rating: Double?
 )

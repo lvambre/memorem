@@ -270,10 +270,6 @@ fun MovieReviewItem(
                 .padding(16.dp)
         ) {
             Row {
-                /* AsyncImage(
-                    model = movieReview.authorDetails.avatarPath,
-                    contentDescription = stringResource(R.string.avatar_path)
-                ) */
                 Text(
                     text = movieReview.author + " (" + movieReview.authorDetails.username + ")",
                     fontWeight = FontWeight.Bold,
@@ -405,7 +401,6 @@ fun MovieReviewItemPreview() {
                 "Wuchak",
                 AuthorDetails(
                     "Wuchak",
-                    "/4KVM1VkqmXLOuwj1jjaSdxbvBDk.jpg",
                     6.7),
                 "really bad movie"
             )
