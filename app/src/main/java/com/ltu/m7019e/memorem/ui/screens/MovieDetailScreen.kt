@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -63,19 +65,19 @@ import com.ltu.m7019e.memorem.model.MovieReview
 import com.ltu.m7019e.memorem.model.MovieVideo
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
+import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
 import com.ltu.m7019e.memorem.viewmodel.SelectedMovieUiState
 
 const val VIDEO_URI = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 
 @Composable
 fun MovieDetailsScreen(
-    selectedMovieUiState: SelectedMovieUiState,
+    memoremViewModel: MemoremViewModel,
     goToHomePage: (String) -> Unit,
     openImdbApp: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    when (selectedMovieUiState) {
+    when (val selectedMovieUiState = memoremViewModel.selectedMovieUiState) {
         is SelectedMovieUiState.Success -> {
             Column(
                 modifier = modifier
@@ -85,8 +87,8 @@ fun MovieDetailsScreen(
                     Box {
                         AsyncImage(
                             model = Constants.BACKDROP_IMAGE_BASE_URL +
-                                    Constants.BACKDROP_IMAGE_WIDTH + selectedMovieUiState.movie.backdropPath,
-                            contentDescription = selectedMovieUiState.movie.title,
+                                    Constants.BACKDROP_IMAGE_WIDTH + selectedMovieUiState.movieDetails.backdropPath,
+                            contentDescription = selectedMovieUiState.movieDetails.title,
                             modifier = modifier,
                             contentScale = ContentScale.Crop
                         )
@@ -105,8 +107,8 @@ fun MovieDetailsScreen(
                         AsyncImage(
                             model = Constants.POSTER_IMAGE_BASE_URL +
                                     Constants.POSTER_IMAGE_WIDTH +
-                                    selectedMovieUiState.movie.posterPath,
-                            contentDescription = selectedMovieUiState.movie.title,
+                                    selectedMovieUiState.movieDetails.posterPath,
+                            contentDescription = selectedMovieUiState.movieDetails.title,
                             modifier = Modifier
                                 .width(92.dp)
                                 .height(138.dp),
@@ -117,16 +119,33 @@ fun MovieDetailsScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = selectedMovieUiState.movie.title,
+                            text = selectedMovieUiState.movieDetails.title,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = dimensionResource(R.dimen.padding_small))
                         )
+                        if(selectedMovieUiState.isFavorite) {
+                            IconButton(
+                                onClick = { memoremViewModel.saveMovie(selectedMovieUiState.movie) }
+                            ) {
+                                Icon(
+                                    Icons.Filled.Favorite,
+                                    contentDescription = null
+                                )
+                            }
+                        } else {
+                            IconButton(
+                                onClick = { memoremViewModel.deleteMovie(selectedMovieUiState.movie) }
+                            ) {
+                                Icon(
+                                    Icons.Filled.FavoriteBorder,
+                                    contentDescription = null
+                                )
+                            }
+                        }
                         Text(
-                            text = selectedMovieUiState.movie.releaseDate.split("-")[0] +
+                            text = selectedMovieUiState.movieDetails.releaseDate.split("-")[0] +
                                     stringResource(R.string.produced_by),
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center,
@@ -134,7 +153,7 @@ fun MovieDetailsScreen(
                                 .fillMaxWidth()
                         )
                         Text(
-                            text = selectedMovieUiState.movie.productionCompanies.joinToString(", ") { it.name },
+                            text = selectedMovieUiState.movieDetails.productionCompanies.joinToString(", ") { it.name },
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
@@ -142,7 +161,7 @@ fun MovieDetailsScreen(
                                 .fillMaxWidth()
                         )
                         Text(
-                            text = selectedMovieUiState.movie.genres.joinToString(", ") { it.name },
+                            text = selectedMovieUiState.movieDetails.genres.joinToString(", ") { it.name },
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
@@ -162,7 +181,7 @@ fun MovieDetailsScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
                 ) {
                     Text(
-                        text = selectedMovieUiState.movie.overview,
+                        text = selectedMovieUiState.movieDetails.overview,
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -177,12 +196,12 @@ fun MovieDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    IconButton(onClick = { goToHomePage(selectedMovieUiState.movie.homepage) }) {
+                    IconButton(onClick = { goToHomePage(selectedMovieUiState.movieDetails.homepage) }) {
                         Icon(
                             painter = painterResource(R.drawable.internet_icon),
                             contentDescription = stringResource(R.string.homepage))
                     }
-                    IconButton(onClick = { openImdbApp(selectedMovieUiState.movie.imdbId) }) {
+                    IconButton(onClick = { openImdbApp(selectedMovieUiState.movieDetails.imdbId) }) {
                         Icon(
                             painter = painterResource(R.drawable.imdb_icon),
                             contentDescription = stringResource(R.string.imdb))
@@ -394,7 +413,7 @@ fun VideoItem() {
 
 @Preview
 @Composable
-fun MovieReviewItemPreview() {
+fun MoviePreview() {
     MemoremTheme {
         MovieReviewItem(
             MovieReview(

@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -34,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -200,10 +198,7 @@ fun MovieItemList(
         onClick = { onMovieItemClicked(movie) }
     ) {
         Row {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(5.dp))
-            ){
+            Box {
                 AsyncImage(
                     model = Constants.POSTER_IMAGE_BASE_URL +
                             Constants.POSTER_IMAGE_WIDTH + movie.posterPath,

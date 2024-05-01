@@ -1,5 +1,6 @@
 package com.ltu.m7019e.memorem.database
 
+import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.ltu.m7019e.memorem.network.MemoremApiService
 import com.ltu.m7019e.memorem.utils.Constants
@@ -10,9 +11,10 @@ import retrofit2.Retrofit
 
 interface AppContainer {
     val moviesRepository: MoviesRepository
+    val savedMoviesRepository: SavedMoviesRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(private val context: Context) : AppContainer {
 
     fun getLoggerInterceptor(): HttpLoggingInterceptor {
         val logging = HttpLoggingInterceptor()
@@ -42,5 +44,9 @@ class DefaultAppContainer : AppContainer {
 
     override val moviesRepository: MoviesRepository by lazy {
         NetworkMoviesRepository(retrofitService)
+    }
+
+    override val savedMoviesRepository: SavedMoviesRepository by lazy {
+        FavoriteMoviesRepository(MovieDatabase.getDatabase(context).movieDao())
     }
 }
