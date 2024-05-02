@@ -62,7 +62,7 @@ fun MemoremApp(
     )
 
     Scaffold(
-        topBar =  {
+        topBar = {
             MemoremTopAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null

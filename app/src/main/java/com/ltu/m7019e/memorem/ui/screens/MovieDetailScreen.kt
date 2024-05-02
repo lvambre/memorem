@@ -177,10 +177,12 @@ fun MovieDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    IconButton(onClick = { goToHomePage(selectedMovieUiState.movie.homepage) }) {
-                        Icon(
-                            painter = painterResource(R.drawable.internet_icon),
-                            contentDescription = stringResource(R.string.homepage))
+                    if(selectedMovieUiState.movie.homepage != "") {
+                        IconButton(onClick = { goToHomePage(selectedMovieUiState.movie.homepage) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.internet_icon),
+                                contentDescription = stringResource(R.string.homepage))
+                        }
                     }
                     IconButton(onClick = { openImdbApp(selectedMovieUiState.movie.imdbId) }) {
                         Icon(
@@ -353,7 +355,6 @@ fun CurrentPoint(selected: Boolean) {
 
 @Composable
 fun VideoItem() {
-
     // Get the current context
     val context = LocalContext.current
 
@@ -365,20 +366,19 @@ fun VideoItem() {
         MediaItem.fromUri(VIDEO_URI)
     }
 
-    // Set MediaSource to ExoPlayer
+    // Set MediaSource to ExoPlayer, prepare for the playback
     LaunchedEffect(mediaSource) {
         exoPlayer.setMediaItem(mediaSource)
         exoPlayer.prepare()
     }
 
-    // Manage lifecycle events
+    // Release the ExoPlayer when the function is not in use
     DisposableEffect(Unit) {
         onDispose {
             exoPlayer.release()
         }
     }
 
-    // Use AndroidView to embed an Android View (PlayerView) into Compose
     AndroidView(
         factory = { ctx ->
             PlayerView(ctx).apply {
@@ -387,7 +387,7 @@ fun VideoItem() {
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp) // Set your desired height
+            .height(200.dp)
     )
 }
 
