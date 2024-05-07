@@ -43,6 +43,7 @@ import com.ltu.m7019e.memorem.ui.screens.SearchMovieScreen
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
 import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
+import com.ltu.m7019e.memorem.viewmodel.MovieCategory
 
 enum class MemoremScreen(@StringRes val title: Int) {
     List(title = R.string.app_name),
@@ -60,20 +61,18 @@ fun MemoremApp(
     val currentScreen = MemoremScreen.valueOf(
         backStackEntry?.destination?.route ?: MemoremScreen.List.name
     )
+    val memoremViewModel: MemoremViewModel = viewModel(factory = MemoremViewModel.Factory)
 
     Scaffold(
         topBar = {
             MemoremTopAppBar(
                 currentScreen = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry != null
-                        && currentScreen != MemoremScreen.List,
+                canNavigateBack = currentScreen == MemoremScreen.Details,
                 navigateUp = { navController.navigateUp() }
                 )
         },
-        bottomBar = { MemoremBottomAppBar(navController) }
+        bottomBar = { MemoremBottomAppBar(memoremViewModel, navController) }
     ) { innerPadding ->
-        val memoremViewModel: MemoremViewModel = viewModel(factory = MemoremViewModel.Factory)
-
         NavHost(
             navController = navController,
             startDestination = MemoremScreen.List.name,
@@ -100,7 +99,7 @@ fun MemoremApp(
             composable(route = MemoremScreen.Details.name) {
                 val context = LocalContext.current
                 MovieDetailsScreen(
-                    selectedMovieUiState = memoremViewModel.selectedMovieUiState,
+                    memoremViewModel = memoremViewModel,
                     goToHomePage = { homepageUrl: String -> goToHomepage(context, homepageUrl) },
                     openImdbApp = { imdb: String -> openImdbApp(context, imdb) },
                     modifier = Modifier
@@ -159,6 +158,7 @@ fun MemoremTopAppBar(
 
 @Composable
 fun MemoremBottomAppBar(
+    memoremViewModel: MemoremViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier) {
     BottomAppBar {
@@ -170,7 +170,10 @@ fun MemoremBottomAppBar(
                     end = dimensionResource(R.dimen.padding_medium)
                 )
         ) {
-            IconButton(onClick = { navController.navigate(MemoremScreen.List.name) }) {
+            IconButton(onClick = {
+                navController.navigate(MemoremScreen.List.name)
+                memoremViewModel.getListMovies(MovieCategory.ALL_MOVIES)
+            }) {
                 Icon(
                     Icons.Rounded.Home,
                     contentDescription = "Home page")
@@ -182,7 +185,10 @@ fun MemoremBottomAppBar(
                     contentDescription = "Search page")
             }
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { navController.navigate(MemoremScreen.Favorite.name) }) {
+            IconButton(onClick = {
+                navController.navigate(MemoremScreen.Favorite.name)
+                memoremViewModel.getListMovies(MovieCategory.FAVORITE_MOVIES)
+            }) {
                 Icon(
                     Icons.Rounded.Favorite,
                     contentDescription = "Favorite movies page")
