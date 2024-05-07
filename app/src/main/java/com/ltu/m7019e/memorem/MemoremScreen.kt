@@ -212,6 +212,7 @@ private fun goToHomepage(
         )
     )
 }
+
 private fun openImdbApp(context: Context, imdb: String) {
     val intent = Intent(Intent.ACTION_VIEW).apply {
         data = Uri.parse(Constants.IMDB_BASE_URL + imdb)

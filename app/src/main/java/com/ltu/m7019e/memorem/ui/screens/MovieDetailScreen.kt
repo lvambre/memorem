@@ -196,10 +196,12 @@ fun MovieDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    IconButton(onClick = { goToHomePage(selectedMovieUiState.movieDetails.homepage) }) {
-                        Icon(
-                            painter = painterResource(R.drawable.internet_icon),
-                            contentDescription = stringResource(R.string.homepage))
+                    if(selectedMovieUiState.movieDetails.homepage != "") {
+                        IconButton(onClick = { goToHomePage(selectedMovieUiState.movieDetails.homepage) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.internet_icon),
+                                contentDescription = stringResource(R.string.homepage))
+                        }
                     }
                     IconButton(onClick = { openImdbApp(selectedMovieUiState.movieDetails.imdbId) }) {
                         Icon(
