@@ -125,12 +125,12 @@ fun MovieDetailsScreen(
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                         )
-                        if(selectedMovieUiState.isFavorite) {
+                        if(!selectedMovieUiState.isFavorite) {
                             IconButton(
                                 onClick = { memoremViewModel.saveMovie(selectedMovieUiState.movie) }
                             ) {
                                 Icon(
-                                    Icons.Filled.Favorite,
+                                    Icons.Filled.FavoriteBorder,
                                     contentDescription = null
                                 )
                             }
@@ -139,7 +139,7 @@ fun MovieDetailsScreen(
                                 onClick = { memoremViewModel.deleteMovie(selectedMovieUiState.movie) }
                             ) {
                                 Icon(
-                                    Icons.Filled.FavoriteBorder,
+                                    Icons.Filled.Favorite,
                                     contentDescription = null
                                 )
                             }
