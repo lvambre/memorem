@@ -1,5 +1,8 @@
 package com.ltu.m7019e.memorem.database
 
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.model.responses.MovieResponse
@@ -68,5 +71,26 @@ class FavoriteMoviesRepository(private val movieDao: MovieDao): SavedMoviesRepos
     override suspend fun deleteMovie(movie: Movie) {
         movieDao.deleteFavoriteMovie(movie.id)
     }
+}
 
+interface CachedMoviesRepository {
+    suspend fun getMovies(): MovieResponse
+
+    suspend fun insertListMovies(movies: MovieResponse)
+
+    suspend fun clearCache()
+}
+
+class CacheRepository(private val movieCacheDao: MovieCacheDao) : CachedMoviesRepository {
+    override suspend fun getMovies(): MovieResponse {
+        return movieCacheDao.getMovies()
+    }
+
+    override suspend fun insertListMovies(movies: MovieResponse) {
+        movieCacheDao.insertListMovies(movies)
+    }
+
+    override suspend fun clearCache() {
+        movieCacheDao.clearCache()
+    }
 }

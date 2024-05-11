@@ -13,6 +13,7 @@ import com.ltu.m7019e.memorem.MemoremApplication
 import com.ltu.m7019e.memorem.R
 import com.ltu.m7019e.memorem.database.MoviesRepository
 import com.ltu.m7019e.memorem.database.SavedMoviesRepository
+import com.ltu.m7019e.memorem.database.WorkManagerCacheRepository
 import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.model.MovieReview
@@ -45,7 +46,8 @@ sealed interface SelectedMovieUiState {
 }
 
 class MemoremViewModel(private val moviesRepository: MoviesRepository,
-                       private val savedMoviesRepository: SavedMoviesRepository) : ViewModel() {
+                       private val savedMoviesRepository: SavedMoviesRepository,
+                       private val workManagerCacheRepository: WorkManagerCacheRepository) : ViewModel() {
 
     var movieListUiState: MovieListUiState by mutableStateOf(MovieListUiState.Loading)
         private set
@@ -168,8 +170,10 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MemoremApplication)
                 val moviesRepository = application.container.moviesRepository
                 val savedMoviesRepository = application.container.savedMoviesRepository
+                val workManagerCacheRepository = application.container.workManagerCacheRepository
                 MemoremViewModel(moviesRepository = moviesRepository,
-                    savedMoviesRepository = savedMoviesRepository)
+                    savedMoviesRepository = savedMoviesRepository,
+                    workManagerCacheRepository = workManagerCacheRepository)
             }
         }
     }
