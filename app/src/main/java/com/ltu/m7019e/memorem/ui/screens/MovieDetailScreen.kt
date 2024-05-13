@@ -83,19 +83,7 @@ fun MovieDetailsScreen(
                 modifier = modifier
                     .verticalScroll(rememberScrollState())
             ) {
-                if (selectedMovieUiState.movieVideos.isEmpty()) {
-                    Box {
-                        AsyncImage(
-                            model = Constants.BACKDROP_IMAGE_BASE_URL +
-                                    Constants.BACKDROP_IMAGE_WIDTH + selectedMovieUiState.movieDetails.backdropPath,
-                            contentDescription = selectedMovieUiState.movieDetails.title,
-                            modifier = modifier,
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                } else {
-                    VideoItem()
-                }
+                VideoItem()
 
                 Spacer(modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)))
                 Row(
@@ -145,7 +133,7 @@ fun MovieDetailsScreen(
                             }
                         }
                         Text(
-                            text = selectedMovieUiState.movieDetails.releaseDate.split("-")[0] +
+                            text = selectedMovieUiState.movieDetails.releaseDate!!.split("-")[0] +
                                     stringResource(R.string.produced_by),
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center,
@@ -153,7 +141,7 @@ fun MovieDetailsScreen(
                                 .fillMaxWidth()
                         )
                         Text(
-                            text = selectedMovieUiState.movieDetails.productionCompanies.joinToString(", ") { it.name },
+                            text = selectedMovieUiState.movieDetails.productionCompanies!!.joinToString(", ") { it.name.toString() },
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
@@ -161,7 +149,7 @@ fun MovieDetailsScreen(
                                 .fillMaxWidth()
                         )
                         Text(
-                            text = selectedMovieUiState.movieDetails.genres.joinToString(", ") { it.name },
+                            text = selectedMovieUiState.movieDetails.genres!!.joinToString(", ") { it.name },
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
@@ -181,7 +169,7 @@ fun MovieDetailsScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
                 ) {
                     Text(
-                        text = selectedMovieUiState.movieDetails.overview,
+                        text = selectedMovieUiState.movieDetails.overview!!,
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -197,13 +185,13 @@ fun MovieDetailsScreen(
                         .fillMaxWidth()
                 ) {
                     if(selectedMovieUiState.movieDetails.homepage != "") {
-                        IconButton(onClick = { goToHomePage(selectedMovieUiState.movieDetails.homepage) }) {
+                        IconButton(onClick = { goToHomePage(selectedMovieUiState.movieDetails.homepage.toString()) }) {
                             Icon(
                                 painter = painterResource(R.drawable.internet_icon),
                                 contentDescription = stringResource(R.string.homepage))
                         }
                     }
-                    IconButton(onClick = { openImdbApp(selectedMovieUiState.movieDetails.imdbId) }) {
+                    IconButton(onClick = { openImdbApp(selectedMovieUiState.movieDetails.imdbId.toString()) }) {
                         Icon(
                             painter = painterResource(R.drawable.imdb_icon),
                             contentDescription = stringResource(R.string.imdb))

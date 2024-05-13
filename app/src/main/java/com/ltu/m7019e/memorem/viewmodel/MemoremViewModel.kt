@@ -13,11 +13,11 @@ import com.ltu.m7019e.memorem.MemoremApplication
 import com.ltu.m7019e.memorem.R
 import com.ltu.m7019e.memorem.database.MoviesRepository
 import com.ltu.m7019e.memorem.database.SavedMoviesRepository
-import com.ltu.m7019e.memorem.database.WorkManagerCacheRepository
+import com.ltu.m7019e.memorem.database.cache.CachedMoviesRepository
+import com.ltu.m7019e.memorem.database.cache.MovieCache
 import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.model.MovieReview
-import com.ltu.m7019e.memorem.model.MovieVideo
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -39,7 +39,6 @@ sealed interface SelectedMovieUiState {
     data class Success(val movie: Movie,
                        val movieDetails: MovieDetails,
                        val movieReviews: List<MovieReview>,
-                       val movieVideos: List<MovieVideo>,
                        val isFavorite: Boolean): SelectedMovieUiState
     object Error: SelectedMovieUiState
     object Loading: SelectedMovieUiState
@@ -47,7 +46,8 @@ sealed interface SelectedMovieUiState {
 
 class MemoremViewModel(private val moviesRepository: MoviesRepository,
                        private val savedMoviesRepository: SavedMoviesRepository,
-                       private val workManagerCacheRepository: WorkManagerCacheRepository) : ViewModel() {
+                       private val cacheRepository: CachedMoviesRepository
+) : ViewModel() {
 
     var movieListUiState: MovieListUiState by mutableStateOf(MovieListUiState.Loading)
         private set
@@ -65,9 +65,18 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
             movieListUiState = when(category) {
                 MovieCategory.ALL_MOVIES -> {
                     try {
+                        if(MovieCategory.ALL_MOVIES != cacheRepository.getCategory()) {
+                            val allMovies = moviesRepository.getPopularMovies().results + moviesRepository.getTopRatedMovies().results
+                            cacheRepository.clearCache()
+                            cacheRepository.insertListMovies(
+                                MovieCache(MovieCategory.ALL_MOVIES, allMovies,
+                                moviesRepository.toMovieDetails(moviesRepository.getPopularMovies().results)
+                                        + moviesRepository.toMovieDetails(moviesRepository.getTopRatedMovies().results),
+                                    moviesRepository.getAllReviews(allMovies))
+                            )
+                        }
                         MovieListUiState
-                            .Success(moviesRepository.getPopularMovies().results
-                                    + moviesRepository.getTopRatedMovies().results)
+                            .Success(cacheRepository.getMovies().movies)
                     } catch (e: IOException) {
                         MovieListUiState.Error
                     } catch (e: HttpException) {
@@ -76,8 +85,16 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                 }
                 MovieCategory.POPULAR_MOVIES -> {
                     try {
+                        if(MovieCategory.POPULAR_MOVIES != cacheRepository.getCategory()) {
+                            val popularMovies = moviesRepository.getPopularMovies().results
+                            cacheRepository.clearCache()
+                            cacheRepository.insertListMovies(
+                                MovieCache(MovieCategory.POPULAR_MOVIES, popularMovies,
+                                    moviesRepository.toMovieDetails(moviesRepository.getPopularMovies().results),
+                                    moviesRepository.getAllReviews(popularMovies)))
+                        }
                         MovieListUiState
-                            .Success(moviesRepository.getPopularMovies().results)
+                            .Success(cacheRepository.getMovies().movies)
                     } catch (e: IOException) {
                         MovieListUiState.Error
                     } catch (e: HttpException) {
@@ -86,8 +103,16 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                 }
                 MovieCategory.TOP_RATED_MOVIES -> {
                     try {
+                        if(MovieCategory.TOP_RATED_MOVIES != cacheRepository.getCategory()) {
+                            cacheRepository.clearCache()
+                            val topRatedMovies = moviesRepository.getTopRatedMovies().results
+                            cacheRepository.insertListMovies(
+                                MovieCache(MovieCategory.TOP_RATED_MOVIES, topRatedMovies,
+                                moviesRepository.toMovieDetails(moviesRepository.getTopRatedMovies().results),
+                                    moviesRepository.getAllReviews(topRatedMovies)))
+                        }
                         MovieListUiState
-                            .Success(moviesRepository.getTopRatedMovies().results)
+                            .Success(cacheRepository.getMovies().movies)
                     } catch (e: IOException) {
                         MovieListUiState.Error
                     } catch (e: HttpException) {
@@ -108,40 +133,44 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
         }
     }
 
-    fun getSavedMovies() {
-        viewModelScope.launch {
-            movieListUiState = MovieListUiState.Loading
-            movieListUiState = try {
-                MovieListUiState.Success(savedMoviesRepository.getSavedMovies())
-            } catch (e: IOException) {
-                MovieListUiState.Error
-            } catch (e: HttpException) {
-                MovieListUiState.Error
-            }
-        }
-    }
-
     fun saveMovie(movie: Movie) {
         viewModelScope.launch {
             savedMoviesRepository.insertMovie(movie)
-            selectedMovieUiState = SelectedMovieUiState.Success(
-                moviesRepository.getMovie(movie.id),
-                moviesRepository.getMovieDetails(movie.id),
-                moviesRepository.getMovieReviews(movie.id).results,
-                moviesRepository.getMovieVideos(movie.id).results,
-                true)
+            selectedMovieUiState =
+                if(cacheRepository.getMovie(movie.id) != null) {
+                SelectedMovieUiState.Success(
+                    movie,
+                    cacheRepository.getMovieDetails(movie.id)!!,
+                    cacheRepository.getMoviesReviews(movie.id)!!,
+                    true
+                )
+            } else {
+                SelectedMovieUiState.Success(
+                    moviesRepository.getMovie(movie.id),
+                    moviesRepository.getMovieDetails(movie.id),
+                    moviesRepository.getMovieReviews(movie.id).results,
+                    true)
+            }
         }
     }
 
     fun deleteMovie(movie: Movie) {
         viewModelScope.launch {
             savedMoviesRepository.deleteMovie(movie)
-            selectedMovieUiState = SelectedMovieUiState.Success(
-                moviesRepository.getMovie(movie.id),
-                moviesRepository.getMovieDetails(movie.id),
-                moviesRepository.getMovieReviews(movie.id).results,
-                moviesRepository.getMovieVideos(movie.id).results,
-                false)
+            selectedMovieUiState = if(cacheRepository.getMovie(movie.id) != null) {
+                SelectedMovieUiState.Success(
+                    movie,
+                    cacheRepository.getMovieDetails(movie.id)!!,
+                    cacheRepository.getMoviesReviews(movie.id)!!,
+                    false
+                )
+            } else {
+                SelectedMovieUiState.Success(
+                    moviesRepository.getMovie(movie.id),
+                    moviesRepository.getMovieDetails(movie.id),
+                    moviesRepository.getMovieReviews(movie.id).results,
+                    false)
+            }
         }
     }
 
@@ -149,12 +178,21 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
         viewModelScope.launch {
             selectedMovieUiState = SelectedMovieUiState.Loading
             selectedMovieUiState = try {
-                SelectedMovieUiState.Success(
-                    moviesRepository.getMovie(movie.id),
-                    moviesRepository.getMovieDetails(movie.id),
-                    moviesRepository.getMovieReviews(movie.id).results,
-                    moviesRepository.getMovieVideos(movie.id).results,
-                    savedMoviesRepository.getMovie(movie.id) != null)
+                if(cacheRepository.getMovie(movie.id) != null) {
+                    SelectedMovieUiState.Success(
+                        movie,
+                        cacheRepository.getMovieDetails(movie.id)!!,
+                        cacheRepository.getMoviesReviews(movie.id)!!,
+                        savedMoviesRepository.getMovie(movie.id) != null
+                    )
+                } else {
+                    // Make the API call if MovieDetails not in cache
+                    SelectedMovieUiState.Success(
+                        movie,
+                        moviesRepository.getMovieDetails(movie.id),
+                        moviesRepository.getMovieReviews(movie.id).results,
+                        savedMoviesRepository.getMovie(movie.id) != null)
+                }
             } catch (e: IOException) {
                 SelectedMovieUiState.Error
             } catch (e: HttpException) {
@@ -170,10 +208,10 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MemoremApplication)
                 val moviesRepository = application.container.moviesRepository
                 val savedMoviesRepository = application.container.savedMoviesRepository
-                val workManagerCacheRepository = application.container.workManagerCacheRepository
+                val cacheRepository = application.container.cacheRepository
                 MemoremViewModel(moviesRepository = moviesRepository,
                     savedMoviesRepository = savedMoviesRepository,
-                    workManagerCacheRepository = workManagerCacheRepository)
+                    cacheRepository = cacheRepository)
             }
         }
     }

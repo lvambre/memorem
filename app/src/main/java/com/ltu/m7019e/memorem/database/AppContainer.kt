@@ -2,6 +2,8 @@ package com.ltu.m7019e.memorem.database
 
 import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.ltu.m7019e.memorem.database.cache.CacheRepository
+import com.ltu.m7019e.memorem.database.cache.CachedMoviesRepository
 import com.ltu.m7019e.memorem.network.MemoremApiService
 import com.ltu.m7019e.memorem.utils.Constants
 import kotlinx.serialization.json.Json
@@ -12,7 +14,7 @@ import retrofit2.Retrofit
 interface AppContainer {
     val moviesRepository: MoviesRepository
     val savedMoviesRepository: SavedMoviesRepository
-    val workManagerCacheRepository: WorkManagerCacheRepository
+    val cacheRepository: CachedMoviesRepository
 }
 
 class DefaultAppContainer(private val context: Context) : AppContainer {
@@ -51,7 +53,7 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         FavoriteMoviesRepository(MovieDatabase.getDatabase(context).movieDao())
     }
 
-    override val workManagerCacheRepository: WorkManagerCacheRepository by lazy {
-        WorkManagerCacheRepository(context)
+    override val cacheRepository: CachedMoviesRepository by lazy {
+        CacheRepository(MovieDatabase.getDatabase(context).movieCacheDao())
     }
 }

@@ -1,10 +1,8 @@
 package com.ltu.m7019e.memorem.database
 
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
 import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.model.MovieDetails
+import com.ltu.m7019e.memorem.model.MovieReview
 import com.ltu.m7019e.memorem.model.responses.MovieResponse
 import com.ltu.m7019e.memorem.model.responses.MovieReviewResponse
 import com.ltu.m7019e.memorem.model.responses.MovieVideoResponse
@@ -17,6 +15,8 @@ interface MoviesRepository {
     suspend fun getMovieDetails(id: Long): MovieDetails
     suspend fun getMovieReviews(id: Long): MovieReviewResponse
     suspend fun getMovieVideos(id: Long): MovieVideoResponse
+    suspend fun toMovieDetails(movies: List<Movie>): List<MovieDetails>
+    suspend fun getAllReviews(movies: List<Movie>): Map<Long, List<MovieReview>>
 }
 
 class NetworkMoviesRepository(private val apiService: MemoremApiService) : MoviesRepository {
@@ -42,6 +42,22 @@ class NetworkMoviesRepository(private val apiService: MemoremApiService) : Movie
 
     override suspend fun getMovieVideos(id: Long): MovieVideoResponse {
         return apiService.getMovieVideos(id)
+    }
+
+    override suspend fun toMovieDetails(movies: List<Movie>): List<MovieDetails> {
+        val moviesDetails:MutableList<MovieDetails> = mutableListOf()
+        movies.forEach {
+            moviesDetails.add(this.getMovieDetails(it.id))
+        }
+        return moviesDetails
+    }
+
+    override suspend fun getAllReviews(movies: List<Movie>): Map<Long, List<MovieReview>> {
+        val moviesReviews: MutableMap<Long, List<MovieReview>> = mutableMapOf()
+        movies.forEach { movie ->
+            moviesReviews.put(movie.id, this.getMovieReviews(movie.id).results)
+        }
+        return moviesReviews
     }
 }
 
@@ -70,27 +86,5 @@ class FavoriteMoviesRepository(private val movieDao: MovieDao): SavedMoviesRepos
 
     override suspend fun deleteMovie(movie: Movie) {
         movieDao.deleteFavoriteMovie(movie.id)
-    }
-}
-
-interface CachedMoviesRepository {
-    suspend fun getMovies(): MovieResponse
-
-    suspend fun insertListMovies(movies: MovieResponse)
-
-    suspend fun clearCache()
-}
-
-class CacheRepository(private val movieCacheDao: MovieCacheDao) : CachedMoviesRepository {
-    override suspend fun getMovies(): MovieResponse {
-        return movieCacheDao.getMovies()
-    }
-
-    override suspend fun insertListMovies(movies: MovieResponse) {
-        movieCacheDao.insertListMovies(movies)
-    }
-
-    override suspend fun clearCache() {
-        movieCacheDao.clearCache()
     }
 }
