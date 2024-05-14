@@ -1,6 +1,7 @@
 package com.ltu.m7019e.memorem.utils
 
 import androidx.room.TypeConverter
+import com.ltu.m7019e.memorem.database.cache.MovieCache
 import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.model.MovieReview
@@ -46,5 +47,19 @@ class MovieReviewMapConverter {
     @TypeConverter
     fun toString(map: Map<Long, List<MovieReview>>): String {
         return json.encodeToString(map)
+    }
+}
+
+class MovieCacheConverter {
+    private val json = Json
+
+    @TypeConverter
+    fun fromString(value: String): MovieCache {
+        return json.decodeFromString(value)
+    }
+
+    @TypeConverter
+    fun toString(movieCache: MovieCache): String {
+        return json.encodeToString(movieCache)
     }
 }

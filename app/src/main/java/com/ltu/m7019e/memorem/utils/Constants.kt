@@ -13,4 +13,12 @@ object Constants {
     const val VIDEO_YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v="
 
     const val API_KEY = SECRETS.API_KEY
+
+    const val MOVIES_CACHE = "movies_cache"
+
+    const val MAX_BYTES = 5120
+    const val CHUNK_INDEX = "chunk_index"
+    const val NB_CHUNKS = "nb_chunks"
+
+    const val UNIQUE = "unique_work"
 }

@@ -67,7 +67,6 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                     try {
                         if(MovieCategory.ALL_MOVIES != cacheRepository.getCategory()) {
                             val allMovies = moviesRepository.getPopularMovies().results + moviesRepository.getTopRatedMovies().results
-                            cacheRepository.clearCache()
                             cacheRepository.insertListMovies(
                                 MovieCache(MovieCategory.ALL_MOVIES, allMovies,
                                 moviesRepository.toMovieDetails(moviesRepository.getPopularMovies().results)
@@ -87,7 +86,6 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                     try {
                         if(MovieCategory.POPULAR_MOVIES != cacheRepository.getCategory()) {
                             val popularMovies = moviesRepository.getPopularMovies().results
-                            cacheRepository.clearCache()
                             cacheRepository.insertListMovies(
                                 MovieCache(MovieCategory.POPULAR_MOVIES, popularMovies,
                                     moviesRepository.toMovieDetails(moviesRepository.getPopularMovies().results),
@@ -104,7 +102,6 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                 MovieCategory.TOP_RATED_MOVIES -> {
                     try {
                         if(MovieCategory.TOP_RATED_MOVIES != cacheRepository.getCategory()) {
-                            cacheRepository.clearCache()
                             val topRatedMovies = moviesRepository.getTopRatedMovies().results
                             cacheRepository.insertListMovies(
                                 MovieCache(MovieCategory.TOP_RATED_MOVIES, topRatedMovies,
@@ -136,40 +133,52 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
     fun saveMovie(movie: Movie) {
         viewModelScope.launch {
             savedMoviesRepository.insertMovie(movie)
-            selectedMovieUiState =
-                if(cacheRepository.getMovie(movie.id) != null) {
-                SelectedMovieUiState.Success(
-                    movie,
-                    cacheRepository.getMovieDetails(movie.id)!!,
-                    cacheRepository.getMoviesReviews(movie.id)!!,
-                    true
-                )
-            } else {
+            selectedMovieUiState = try {
+
+//                if(cacheRepository.getMovie(movie.id) != null) {
+//                SelectedMovieUiState.Success(
+//                    movie,
+//                    cacheRepository.getMovieDetails(movie.id)!!,
+//                    cacheRepository.getMoviesReviews(movie.id)!!,
+//                    true
+//                )
+//            } else {
                 SelectedMovieUiState.Success(
                     moviesRepository.getMovie(movie.id),
                     moviesRepository.getMovieDetails(movie.id),
                     moviesRepository.getMovieReviews(movie.id).results,
                     true)
-            }
+            } catch (e: IOException) {
+            SelectedMovieUiState.Error
+        } catch (e: HttpException) {
+            SelectedMovieUiState.Error
+        }
         }
     }
 
     fun deleteMovie(movie: Movie) {
         viewModelScope.launch {
             savedMoviesRepository.deleteMovie(movie)
-            selectedMovieUiState = if(cacheRepository.getMovie(movie.id) != null) {
-                SelectedMovieUiState.Success(
-                    movie,
-                    cacheRepository.getMovieDetails(movie.id)!!,
-                    cacheRepository.getMoviesReviews(movie.id)!!,
-                    false
-                )
-            } else {
+            selectedMovieUiState = try {
+
+//                if(cacheRepository.getMovie(movie.id) != null) {
+//                SelectedMovieUiState.Success(
+//                    movie,
+//                    cacheRepository.getMovieDetails(movie.id)!!,
+//                    cacheRepository.getMoviesReviews(movie.id)!!,
+//                    false
+//                )
+//            } else {
                 SelectedMovieUiState.Success(
                     moviesRepository.getMovie(movie.id),
                     moviesRepository.getMovieDetails(movie.id),
                     moviesRepository.getMovieReviews(movie.id).results,
-                    false)
+                    false
+                )
+            } catch (e: IOException) {
+                SelectedMovieUiState.Error
+            } catch (e: HttpException) {
+                SelectedMovieUiState.Error
             }
         }
     }
@@ -178,21 +187,21 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
         viewModelScope.launch {
             selectedMovieUiState = SelectedMovieUiState.Loading
             selectedMovieUiState = try {
-                if(cacheRepository.getMovie(movie.id) != null) {
-                    SelectedMovieUiState.Success(
-                        movie,
-                        cacheRepository.getMovieDetails(movie.id)!!,
-                        cacheRepository.getMoviesReviews(movie.id)!!,
-                        savedMoviesRepository.getMovie(movie.id) != null
-                    )
-                } else {
+//                if(cacheRepository.getMovie(movie.id) != null) {
+//                    SelectedMovieUiState.Success(
+//                        movie,
+//                        cacheRepository.getMovieDetails(movie.id)!!,
+//                        cacheRepository.getMoviesReviews(movie.id)!!,
+//                        savedMoviesRepository.getMovie(movie.id) != null
+//                    )
+//                } else {
                     // Make the API call if MovieDetails not in cache
                     SelectedMovieUiState.Success(
                         movie,
                         moviesRepository.getMovieDetails(movie.id),
                         moviesRepository.getMovieReviews(movie.id).results,
                         savedMoviesRepository.getMovie(movie.id) != null)
-                }
+                //}
             } catch (e: IOException) {
                 SelectedMovieUiState.Error
             } catch (e: HttpException) {

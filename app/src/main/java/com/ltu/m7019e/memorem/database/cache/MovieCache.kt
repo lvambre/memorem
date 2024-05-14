@@ -6,7 +6,9 @@ import com.ltu.m7019e.memorem.model.Movie
 import com.ltu.m7019e.memorem.model.MovieDetails
 import com.ltu.m7019e.memorem.model.MovieReview
 import com.ltu.m7019e.memorem.viewmodel.MovieCategory
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity(tableName = "cache_movies")
 class MovieCache(
     @PrimaryKey
