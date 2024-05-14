@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,7 +38,6 @@ import androidx.navigation.compose.rememberNavController
 import com.ltu.m7019e.memorem.ui.screens.FavoriteMoviesScreen
 import com.ltu.m7019e.memorem.ui.screens.HomeScreen
 import com.ltu.m7019e.memorem.ui.screens.MovieDetailsScreen
-import com.ltu.m7019e.memorem.ui.screens.SearchMovieScreen
 import com.ltu.m7019e.memorem.ui.theme.MemoremTheme
 import com.ltu.m7019e.memorem.utils.Constants
 import com.ltu.m7019e.memorem.viewmodel.MemoremViewModel
@@ -48,7 +46,6 @@ import com.ltu.m7019e.memorem.viewmodel.MovieCategory
 enum class MemoremScreen(@StringRes val title: Int) {
     List(title = R.string.app_name),
     Details(title = R.string.movie_details),
-    Search(title = R.string.search),
     Favorite(title = R.string.favorite_movies)
 }
 
@@ -106,10 +103,6 @@ fun MemoremApp(
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium))
                 )
-            }
-
-            composable(route = MemoremScreen.Search.name) {
-                SearchMovieScreen()
             }
 
             composable(route = MemoremScreen.Favorite.name) {
@@ -170,6 +163,7 @@ fun MemoremBottomAppBar(
                     end = dimensionResource(R.dimen.padding_medium)
                 )
         ) {
+            Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {
                 navController.navigate(MemoremScreen.List.name)
                 memoremViewModel.getListMovies(MovieCategory.ALL_MOVIES)
@@ -177,12 +171,6 @@ fun MemoremBottomAppBar(
                 Icon(
                     Icons.Rounded.Home,
                     contentDescription = "Home page")
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = { navController.navigate(MemoremScreen.Search.name) }) {
-                Icon(
-                    Icons.Rounded.Search,
-                    contentDescription = "Search page")
             }
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {
@@ -193,6 +181,7 @@ fun MemoremBottomAppBar(
                     Icons.Rounded.Favorite,
                     contentDescription = "Favorite movies page")
             }
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }

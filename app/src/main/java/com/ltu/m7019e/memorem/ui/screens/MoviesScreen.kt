@@ -194,7 +194,8 @@ fun MovieItemList(
 ) {
     Card(
         modifier = modifier
-            .height(140.dp),
+            .height(140.dp)
+            .fillMaxWidth(),
         onClick = { onMovieItemClicked(movie) }
     ) {
         Row {
