@@ -16,11 +16,8 @@ class CacheRepository(private val movieCacheDao: MovieCacheDao) : CachedMoviesRe
     }
 
     override suspend fun insertListMovies(movies: MovieCache) {
-        movieCacheDao.insertListMovies(movies)
-    }
-
-    override suspend fun clearCache() {
         movieCacheDao.clearCache()
+        movieCacheDao.insertListMovies(movies)
     }
 
     override suspend fun getMovie(id: Long): Movie? {

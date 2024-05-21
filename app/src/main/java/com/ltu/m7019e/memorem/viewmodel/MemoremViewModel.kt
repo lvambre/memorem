@@ -67,7 +67,6 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                     try {
                         if(MovieCategory.ALL_MOVIES != cacheRepository.getCategory()) {
                             val allMovies = moviesRepository.getPopularMovies().results + moviesRepository.getTopRatedMovies().results
-                            cacheRepository.clearCache()
                             cacheRepository.insertListMovies(
                                 MovieCache(MovieCategory.ALL_MOVIES, allMovies,
                                 moviesRepository.toMovieDetails(moviesRepository.getPopularMovies().results)
@@ -87,7 +86,6 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                     try {
                         if(MovieCategory.POPULAR_MOVIES != cacheRepository.getCategory()) {
                             val popularMovies = moviesRepository.getPopularMovies().results
-                            cacheRepository.clearCache()
                             cacheRepository.insertListMovies(
                                 MovieCache(MovieCategory.POPULAR_MOVIES, popularMovies,
                                     moviesRepository.toMovieDetails(moviesRepository.getPopularMovies().results),
@@ -104,7 +102,6 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                 MovieCategory.TOP_RATED_MOVIES -> {
                     try {
                         if(MovieCategory.TOP_RATED_MOVIES != cacheRepository.getCategory()) {
-                            cacheRepository.clearCache()
                             val topRatedMovies = moviesRepository.getTopRatedMovies().results
                             cacheRepository.insertListMovies(
                                 MovieCache(MovieCategory.TOP_RATED_MOVIES, topRatedMovies,

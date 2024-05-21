@@ -9,7 +9,6 @@ interface CachedMoviesRepository {
     suspend fun getCategory(): MovieCategory
     suspend fun getMovies(): MovieCache
     suspend fun insertListMovies(movies: MovieCache)
-    suspend fun clearCache()
     suspend fun getMovie(id: Long): Movie?
     suspend fun getMovieDetails(id: Long): MovieDetails?
     suspend fun getMoviesReviews(id: Long): List<MovieReview>?
