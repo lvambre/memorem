@@ -15,6 +15,7 @@ object Constants {
     const val API_KEY = SECRETS.API_KEY
 
     const val MOVIES_CACHE = "movies_cache"
+    const val CATEGORY_CACHE = "category_cache"
 
     const val MAX_BYTES = 5120
     const val CHUNK_INDEX = "chunk_index"

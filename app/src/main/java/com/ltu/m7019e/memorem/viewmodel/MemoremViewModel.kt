@@ -74,8 +74,13 @@ class MemoremViewModel(private val moviesRepository: MoviesRepository,
                                     moviesRepository.getAllReviews(allMovies))
                             )
                         }
-                        MovieListUiState
-                            .Success(cacheRepository.getMovies().movies)
+                        val movies = cacheRepository.getMovies().movies
+                        if(movies.isNotEmpty()) {
+                            MovieListUiState
+                                .Success(movies)
+                        } else {
+                            MovieListUiState.Error
+                        }
                     } catch (e: IOException) {
                         MovieListUiState.Error
                     } catch (e: HttpException) {

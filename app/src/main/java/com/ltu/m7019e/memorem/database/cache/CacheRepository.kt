@@ -17,6 +17,7 @@ import com.ltu.m7019e.memorem.utils.Constants.UNIQUE
 import com.ltu.m7019e.memorem.utils.MovieCacheConverter
 import com.ltu.m7019e.memorem.viewmodel.MovieCategory
 import com.ltu.m7019e.memorem.workers.CacheWorker
+import com.ltu.m7019e.memorem.workers.CategoryWorker
 import com.ltu.m7019e.memorem.workers.GetCacheWorker
 import kotlinx.coroutines.CompletableDeferred
 import kotlin.math.ceil
@@ -25,6 +26,8 @@ class CacheRepository(private val movieCacheDao: MovieCacheDao, context: Context
     private val workManager = WorkManager.getInstance(context)
 
     override suspend fun getCategory(): MovieCategory {
+        val getCategoryBuilder = OneTimeWorkRequestBuilder<CategoryWorker>().build()
+        workManager.enqueue(getCategoryBuilder)
         return movieCacheDao.getCategory()
     }
     override suspend fun getMovies(): MovieCache {
